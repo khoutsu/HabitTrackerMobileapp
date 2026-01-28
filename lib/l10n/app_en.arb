@@ -1,0 +1,155 @@
+{
+  "@@locale": "en",
+  "myHabits": "My Habits",
+  "settings": "Settings",
+  "backupAndRestore": "Backup & Restore",
+  "theme": "Theme",
+  "language": "Language",
+  "notifications": "Notifications",
+  "about": "About",
+  "statistics": "Statistics",
+
+  "archivedHabits": "Archived Habits",
+  "habitName": "Habit Name",
+  "enterHabitName": "Please enter a habit name",
+  "descriptionOptional": "Description (Optional)",
+  "color": "Color",
+  "selectColor": "Select a color",
+  "select": "SELECT",
+  "everyday": "Everyday",
+  "daily": "Daily",
+  "weekly": "Weekly",
+  "monthly": "Monthly",
+  "custom": "Custom",
+  "createHabit": "CREATE HABIT",
+  "createNewHabit": "Create New Habit",
+  "editHabit": "Edit Habit",
+  "saveChanges": "SAVE CHANGES",
+  "deleteHabit": "Delete Habit?",
+  "deleteHabitConfirmation": "Are you sure you want to delete \"{habitName}\"? This action cannot be undone.",
+  "@deleteHabitConfirmation": {
+    "placeholders": {
+      "habitName": {
+        "type": "String"
+      }
+    }
+  },
+  "cancel": "CANCEL",
+  "delete": "DELETE",
+  "createdOn": "Created on: {date}",
+  "@createdOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "currentStreak": "Current Streak",
+  "totalCompletions": "Total Completions",
+  "progressCharts": "Progress Charts:",
+  "statsDays": "days",
+  "statsTimes": "times",
+  "mon": "Mon",
+  "tue": "Tue",
+  "wed": "Wed",
+  "thu": "Thu",
+  "fri": "Fri",
+  "sat": "Sat",
+  "sun": "Sun",
+  "jan": "Jan",
+  "feb": "Feb",
+  "mar": "Mar",
+  "apr": "Apr",
+  "may": "May",
+  "jun": "Jun",
+  "jul": "Jul",
+  "aug": "Aug",
+  "sep": "Sep",
+  "oct": "Oct",
+  "nov": "Nov",
+  "dec": "Dec",
+  "weekdays": "Weekdays",
+  "weekends": "Weekends",
+  "successRate": "Success Rate",
+  "frequencyLast7Days": "Frequency (Last 7 Days)",
+  "habitStrengthLast30Days": "Habit Strength (Last 30 Days)",
+  "cannotSkipCompleted": "Cannot skip a completed day.",
+  "skipDay": "Skip Day",
+  "unskipDay": "Un-skip Day",
+  "confirmSkip": "Are you sure you want to mark this day as skipped? This will not break your streak.",
+  "confirmUnskip": "Are you sure you want to remove the skip for this day?",
+  "skip": "Skip",
+  "unskip": "Un-skip",
+  "addNewCategory": "Add New Category",
+  "categoryName": "Category Name",
+  "add": "Add",
+  "categories": "Categories",
+  "edit": "Edit",
+  "archive": "Archive",
+  "restoreHabit": "Restore Habit",
+  "deletePermanently": "Delete Permanently",
+
+  "habitType": "Habit Type",
+  "habitTypeYesNo": "Regular",
+  "habitTypeNumeric": "Numeric",
+  "habitTypeTimed": "Timed",
+  "numericUnit": "Unit (e.g., pages, glasses)",
+  "goal": "Goal",
+  "goalType": "Goal Type",
+  "goalTypeOff": "Off",
+  "goalTypeTargetCount": "Target Count",
+  "targetValue": "Target Amount",
+  "goalPeriod": "Per Period",
+  "goalPeriodDaily": "Daily",
+  "goalPeriodWeekly": "Weekly",
+  "goalPeriodMonthly": "Monthly",
+  "goalPeriodAllTime": "All Time",
+  "enterValueFor": "Enter Value for {habitName}",
+  "@enterValueFor": {
+    "placeholders": {
+      "habitName": {
+        "type": "String"
+      }
+    }
+  },
+  "valueLabel": "Value",
+  "timerDuration": "Timer Duration (minutes)",
+  "noHabitsYet": "No habits yet!",
+  "addFirstHabit": "Tap the + button to add your first habit.",
+  "noArchivedHabits": "You have no archived habits.",
+  "uncategorized": "Uncategorized",
+  "timerTitle": "Timer: {habitName}",
+  "@timerTitle": {
+    "placeholders": {
+      "habitName": {
+        "type": "String"
+      }
+    }
+  },
+  "selectDuration": "Select Duration (HH:MM)",
+  "selectDuration": "Select Duration (HH:MM)",
+  "save": "SAVE",
+  "activityLog": "Activity Log",
+  "maxStreak": "Max Streak",
+  "success": "Success",
+  "missed": "Missed",
+  "repeatEvery": "Repeat every",
+  "days": "days",
+  "noCategories": "No categories",
+  "deleteCategoryConfirmation": "Are you sure you want to delete '{categoryName}'?",
+  "@deleteCategoryConfirmation": {
+    "placeholders": {
+      "categoryName": {
+        "type": "String"
+      }
+    }
+  },
+  "showAll": "Show All",
+  "showLess": "Show Less",
+  "habitTypeHelpTitle": "Habit Types",
+  "habitTypeHelpBody": "1. **Regular:** Simple Yes/No check (e.g., Wake up early)\n2. **Numeric:** Track a number (e.g., Drink 8 glasses)\n3. **Timed:** Track duration (e.g., Meditate 15 mins)",
+  "goalHelpTitle": "Goal Periods",
+  "goalHelpBody": "1. **Daily:** Resets every day.\n2. **Weekly:** Resets every Monday.\n3. **Monthly:** Resets on the 1st of the month.\n4. **All Time:** Never resets (Accumulates forever).",
+  "frequencyHelpTitle": "Frequency",
+  "frequencyHelpBody": "1. **Daily:** Everyday, Weekdays, or Weekends.\n2. **Weekly:** specific days (Mon-Sun).\n3. **Monthly:** Once a month (Select specific months).\n4. **Custom:** Repeat every X days (e.g. Every 2 days = Every other day)."
+}

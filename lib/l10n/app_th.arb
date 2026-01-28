@@ -1,0 +1,155 @@
+{
+  "@@locale": "th",
+  "myHabits": "กิจวัตรของฉัน",
+  "settings": "ตั้งค่า",
+  "backupAndRestore": "สำรองและกู้คืนข้อมูล",
+  "theme": "ธีม",
+  "language": "ภาษา",
+  "notifications": "การแจ้งเตือน",
+  "about": "เกี่ยวกับ",
+  "statistics": "สถิติ",
+
+  "archivedHabits": "กิจวัตรที่เก็บถาวร",
+  "habitName": "ชื่อกิจวัตร",
+  "enterHabitName": "กรุณากรอกชื่อกิจวัตร",
+  "descriptionOptional": "รายละเอียด (ไม่บังคับ)",
+  "color": "สี",
+  "selectColor": "เลือกสี",
+  "select": "เลือก",
+  "everyday": "ทุกวัน",
+  "daily": "รายวัน",
+  "weekly": "รายสัปดาห์",
+  "monthly": "รายเดือน",
+  "custom": "กำหนดเอง",
+  "createHabit": "สร้างกิจวัตร",
+  "createNewHabit": "สร้างกิจวัตรใหม่",
+  "editHabit": "แก้ไขกิจวัตร",
+  "saveChanges": "บันทึกการเปลี่ยนแปลง",
+  "deleteHabit": "ลบกิจวัตร?",
+  "deleteHabitConfirmation": "คุณแน่ใจหรือไม่ว่าต้องการลบ \"{habitName}\"? การกระทำนี้ไม่สามารถย้อนกลับได้",
+  "@deleteHabitConfirmation": {
+    "placeholders": {
+      "habitName": {
+        "type": "String"
+      }
+    }
+  },
+  "cancel": "ยกเลิก",
+  "delete": "ลบ",
+  "createdOn": "สร้างเมื่อ: {date}",
+  "@createdOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "currentStreak": "สถิติต่อเนื่องปัจจุบัน",
+  "totalCompletions": "ทำสำเร็จทั้งหมด",
+  "progressCharts": "กราฟความคืบหน้า:",
+  "statsDays": "วัน",
+  "statsTimes": "ครั้ง",
+  "mon": "จ",
+  "tue": "อ",
+  "wed": "พ",
+  "thu": "พฤ",
+  "fri": "ศ",
+  "sat": "ส",
+  "sun": "อา",
+  "jan": "ม.ค",
+  "feb": "ก.พ",
+  "mar": "มี.ค",
+  "apr": "เม.ย",
+  "may": "พ.ค",
+  "jun": "มิ.ย",
+  "jul": "ก.ค",
+  "aug": "ส.ค",
+  "sep": "ก.ย",
+  "oct": "ต.ค",
+  "nov": "พ.ย",
+  "dec": "ธ.ค",
+  "weekdays": "วันธรรมดา",
+  "weekends": "วันหยุดสุดสัปดาห์",
+  "successRate": "อัตราความสำเร็จ",
+  "frequencyLast7Days": "ความถี่ (7 วันล่าสุด)",
+  "habitStrengthLast30Days": "ความแข็งแกร่งของกิจวัตร (30 วันล่าสุด)",
+  "cannotSkipCompleted": "ไม่สามารถข้ามวันที่ทำสำเร็จแล้ว",
+  "skipDay": "ข้ามวัน",
+  "unskipDay": "ยกเลิกการข้าม",
+  "confirmSkip": "คุณแน่ใจหรือไม่ว่าต้องการข้ามวันนี้? การทำเช่นนี้จะไม่ส่งผลต่อสถิติของคุณ",
+  "confirmUnskip": "คุณแน่ใจหรือไม่ว่าต้องการยกเลิกการข้ามสำหรับวันนี้?",
+  "skip": "ข้าม",
+  "unskip": "ยกเลิกการข้าม",
+  "addNewCategory": "เพิ่มหมวดหมู่ใหม่",
+  "categoryName": "ชื่อหมวดหมู่",
+  "add": "เพิ่ม",
+  "categories": "หมวดหมู่",
+  "edit": "แก้ไข",
+  "archive": "เก็บถาวร",
+  "restoreHabit": "กู้คืนกิจวัตร",
+  "deletePermanently": "ลบอย่างถาวร",
+
+  "habitType": "ประเภทของกิจวัตร",
+  "habitTypeYesNo": "ทั่วไป",
+  "habitTypeNumeric": "ระบุจำนวน",
+  "habitTypeTimed": "จับเวลา",
+  "numericUnit": "หน่วย (เช่น หน้า, แก้ว)",
+  "goal": "เป้าหมาย",
+  "goalType": "ประเภทเป้าหมาย",
+  "goalTypeOff": "ปิด",
+  "goalTypeTargetCount": "จำนวนครั้ง",
+  "targetValue": "จำนวนที่ต้องทำ",
+  "goalPeriod": "ต่อระยะเวลา",
+  "goalPeriodDaily": "รายวัน",
+  "goalPeriodWeekly": "รายสัปดาห์",
+  "goalPeriodMonthly": "รายเดือน",
+  "goalPeriodAllTime": "ทั้งหมด",
+  "enterValueFor": "ระบุจำนวนสำหรับ {habitName}",
+  "@enterValueFor": {
+    "placeholders": {
+      "habitName": {
+        "type": "String"
+      }
+    }
+  },
+  "valueLabel": "จำนวน",
+  "timerDuration": "ระยะเวลาจับเวลา (นาที)",
+  "noHabitsYet": "ยังไม่มีกิจวัตร!",
+  "addFirstHabit": "แตะปุ่ม + เพื่อเพิ่มกิจวัตรแรกของคุณ",
+  "noArchivedHabits": "คุณไม่มีกิจวัตรที่เก็บถาวร",
+  "uncategorized": "ไม่มีหมวดหมู่",
+  "timerTitle": "จับเวลา: {habitName}",
+  "@timerTitle": {
+    "placeholders": {
+      "habitName": {
+        "type": "String"
+      }
+    }
+  },
+  "selectDuration": "เลือกระยะเวลา (ชม.:นาที)",
+  "selectDuration": "เลือกระยะเวลา (ชม:นาที)",
+  "save": "บันทึก",
+  "activityLog": "บันทึกกิจกรรม",
+  "maxStreak": "ทำต่อเนื่องสูงสุด",
+  "success": "สำเร็จ",
+  "missed": "พลาด",
+  "repeatEvery": "ทำซ้ำทุกๆ",
+  "days": "วัน",
+  "noCategories": "ไม่มีหมวดหมู่",
+  "deleteCategoryConfirmation": "คุณแน่ใจหรือไม่ว่าต้องการลบ '{categoryName}'?",
+  "@deleteCategoryConfirmation": {
+    "placeholders": {
+      "categoryName": {
+        "type": "String" 
+      }
+    }
+  },
+  "showAll": "แสดงทั้งหมด",
+  "showLess": "แสดงน้อยลง",
+  "habitTypeHelpTitle": "ประเภทของกิจวัตร",
+  "habitTypeHelpBody": "1. ทั่วไป (Regular): แค่เช็คว่าทำหรือไม่ทำ (เช่น ตื่นเช้า)\n2. ระบุจำนวน (Numeric): ใส่ค่าตัวเลข (เช่น ดื่มน้ำ 8 แก้ว)\n3. จับเวลา (Timed): จับเวลาที่ทำ (เช่น นั่งสมาธิ 15 นาที)",
+  "goalHelpTitle": "ระยะเวลาของเป้าหมาย",
+  "goalHelpBody": "1. รายวัน: รีเซ็ตยอดทุกวัน (เช่น ต้องทำทุกวัน)\n2. รายสัปดาห์: รีเซ็ตทุกวันจันทร์ (เหมาะสำหรับทำสะสมในวีค)\n3. รายเดือน: รีเซ็ตทุกต้นเดือน\n4. ทั้งหมด: ไม่มีการรีเซ็ต (สะสมยอดไปเรื่อยๆ จนครบ)",
+  "frequencyHelpTitle": "ความถี่ (Frequency)",
+  "frequencyHelpBody": "1. รายวัน: เลือกทำทุกวัน หรือ วันธรรมดา/เสาร์อาทิตย์\n2. รายสัปดาห์: เลือกวันเองระบุวัน (จันทร์ - อาทิตย์)\n3. รายเดือน: ทำเดือนละ 1 ครั้ง (ระบุเดือนที่จะทำได้)\n4. กำหนดเอง: ทำซ้ำทุกๆ X วัน (เช่น ทุก 2 วัน คือทำวันเว้นวัน)"
+}
