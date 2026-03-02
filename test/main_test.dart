@@ -30,8 +30,8 @@ class MyApp extends StatelessWidget {
       builder: (context, themeProvider, languageProvider, child) {
         return MaterialApp(
           title: 'Loop Habit Tracker',
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
+          theme: AppTheme.lightTheme(themeProvider.themeStyle),
+          darkTheme: AppTheme.darkTheme(themeProvider.themeStyle),
           themeMode: themeProvider.themeMode,
           locale: languageProvider.appLocale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,

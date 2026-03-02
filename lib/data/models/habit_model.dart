@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loop_habit_tracker/data/models/category_model.dart';
 import 'package:loop_habit_tracker/data/models/frequency_model.dart';
+import 'package:loop_habit_tracker/data/models/reminder_model.dart';
 
 enum HabitType { yesNo, numeric, timed }
 
@@ -24,6 +25,8 @@ class Habit {
   final GoalType goalType;
   final int? goalValue;
   final GoalPeriod goalPeriod;
+  final List<Reminder>? reminders;
+  final int sortOrder;
 
   Habit({
     this.id,
@@ -39,6 +42,8 @@ class Habit {
     this.goalType = GoalType.off,
     this.goalValue,
     this.goalPeriod = GoalPeriod.allTime,
+    this.reminders,
+    this.sortOrder = 0,
   });
 
   Habit copyWith({
@@ -55,6 +60,8 @@ class Habit {
     GoalType? goalType,
     int? goalValue,
     GoalPeriod? goalPeriod,
+    List<Reminder>? reminders,
+    int? sortOrder,
   }) {
     return Habit(
       id: id ?? this.id,
@@ -70,6 +77,8 @@ class Habit {
       goalType: goalType ?? this.goalType,
       goalValue: goalValue ?? this.goalValue,
       goalPeriod: goalPeriod ?? this.goalPeriod,
+      reminders: reminders ?? this.reminders,
+      sortOrder: sortOrder ?? this.sortOrder,
     );
   }
 
@@ -87,6 +96,7 @@ class Habit {
       'goal_type': goalType.toString(),
       'goal_value': goalValue,
       'goal_period': goalPeriod.toString(),
+      'sort_order': sortOrder,
     };
   }
 
@@ -100,6 +110,7 @@ class Habit {
       createdAt: DateTime.parse(map['created_at']),
       archived: map['archived'] == 1,
       categories: [], // Categories will be loaded separately
+      reminders: [], // Reminders will be loaded separately
       habitType: HabitType.values.firstWhere(
         (e) => e.toString() == map['habit_type'],
         orElse: () => HabitType.yesNo,
@@ -114,6 +125,7 @@ class Habit {
         (e) => e.toString() == map['goal_period'],
         orElse: () => GoalPeriod.allTime,
       ),
+      sortOrder: map['sort_order'] ?? 0,
     );
   }
 }

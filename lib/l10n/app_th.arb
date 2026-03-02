@@ -9,7 +9,7 @@
   "about": "เกี่ยวกับ",
   "statistics": "สถิติ",
 
-  "archivedHabits": "กิจวัตรที่เก็บถาวร",
+  "archivedHabits": "คลังกิจวัตร",
   "habitName": "ชื่อกิจวัตร",
   "enterHabitName": "กรุณากรอกชื่อกิจวัตร",
   "descriptionOptional": "รายละเอียด (ไม่บังคับ)",
@@ -72,7 +72,7 @@
   "weekends": "วันหยุดสุดสัปดาห์",
   "successRate": "อัตราความสำเร็จ",
   "frequencyLast7Days": "ความถี่ (7 วันล่าสุด)",
-  "habitStrengthLast30Days": "ความแข็งแกร่งของกิจวัตร (30 วันล่าสุด)",
+  "habitStrengthLast30Days": "ความถี่ในการทำกิจวัตร (30 วันล่าสุด)",
   "cannotSkipCompleted": "ไม่สามารถข้ามวันที่ทำสำเร็จแล้ว",
   "skipDay": "ข้ามวัน",
   "unskipDay": "ยกเลิกการข้าม",
@@ -85,7 +85,7 @@
   "add": "เพิ่ม",
   "categories": "หมวดหมู่",
   "edit": "แก้ไข",
-  "archive": "เก็บถาวร",
+  "archive": "เก็บเข้าคลัง",
   "restoreHabit": "กู้คืนกิจวัตร",
   "deletePermanently": "ลบอย่างถาวร",
 
@@ -116,7 +116,7 @@
   "timerDuration": "ระยะเวลาจับเวลา (นาที)",
   "noHabitsYet": "ยังไม่มีกิจวัตร!",
   "addFirstHabit": "แตะปุ่ม + เพื่อเพิ่มกิจวัตรแรกของคุณ",
-  "noArchivedHabits": "คุณไม่มีกิจวัตรที่เก็บถาวร",
+  "noArchivedHabits": "คุณไม่มีกิจวัตรที่เก็บเข้าคลัง",
   "uncategorized": "ไม่มีหมวดหมู่",
   "timerTitle": "จับเวลา: {habitName}",
   "@timerTitle": {
@@ -151,5 +151,111 @@
   "goalHelpTitle": "ระยะเวลาของเป้าหมาย",
   "goalHelpBody": "1. รายวัน: รีเซ็ตยอดทุกวัน (เช่น ต้องทำทุกวัน)\n2. รายสัปดาห์: รีเซ็ตทุกวันจันทร์ (เหมาะสำหรับทำสะสมในวีค)\n3. รายเดือน: รีเซ็ตทุกต้นเดือน\n4. ทั้งหมด: ไม่มีการรีเซ็ต (สะสมยอดไปเรื่อยๆ จนครบ)",
   "frequencyHelpTitle": "ความถี่ (Frequency)",
-  "frequencyHelpBody": "1. รายวัน: เลือกทำทุกวัน หรือ วันธรรมดา/เสาร์อาทิตย์\n2. รายสัปดาห์: เลือกวันเองระบุวัน (จันทร์ - อาทิตย์)\n3. รายเดือน: ทำเดือนละ 1 ครั้ง (ระบุเดือนที่จะทำได้)\n4. กำหนดเอง: ทำซ้ำทุกๆ X วัน (เช่น ทุก 2 วัน คือทำวันเว้นวัน)"
+  "frequencyHelpBody": "1. รายวัน: เลือกทำทุกวัน หรือ วันธรรมดา/เสาร์อาทิตย์\n2. รายสัปดาห์: เลือกวันเองระบุวัน (จันทร์ - อาทิตย์)\n3. รายเดือน: ทำเดือนละ 1 ครั้ง (ระบุเดือนที่จะทำได้)\n4. กำหนดเอง: ทำซ้ำทุกๆ X วัน (เช่น ทุก 2 วัน คือทำวันเว้นวัน)",
+  "all": "ทั้งหมด",
+  "completeGoal": "ทำเป้าหมายให้สำเร็จทันที?",
+  "completeGoalConfirmation": "ต้องการบันทึกว่าทำอีก {count} ครั้ง เพื่อให้ครบเป้าหมายเลยหรือไม่?",
+  "@completeGoalConfirmation": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "chooseAction": "เลือกการกระทำ",
+  "markAsDone": "ทำเครื่องหมายว่าเสร็จ",
+  "shareExportCSV": "ส่งออกข้อมูล Loop Habit Tracker (CSV)",
+  "shareBackupSQLite": "สำรองข้อมูล Loop Habit Tracker (SQLite)",
+  "loopHabitTrackerBackup": "การสำรองข้อมูล Loop Habit Tracker",
+  "reminders": "การแจ้งเตือน",
+  "reminderTime": "เวลาแจ้งเตือน",
+  "exportData": "ส่งออกข้อมูล",
+  "exportToCSV": "ส่งออกเป็น CSV",
+  "exportToSQLite": "ส่งออกเป็น SQLite",
+  "importData": "นำเข้าข้อมูล",
+  "importFromCSV": "นำเข้าจาก CSV",
+  "importFromSQLite": "นำเข้าจาก SQLite",
+  "backupHistory": "ประวัติการสำรองข้อมูล",
+  "noBackupFilesFound": "ไม่พบไฟล์สำรองข้อมูล",
+  "statisticsOverview": "ภาพรวมสถิติ",
+  "overallSummary": "สรุปผลรวม",
+  "totalHabits": "กิจวัตรทั้งหมด",
+  "noHabitsToRank": "ไม่มีข้อมูลกิจวัตรสำหรับจัดอันดับ",
+  "habitLeaderboard": "อันดับทำสูงสุด",
+  "savedToDownloads": "บันทึกไปยังโฟลเดอร์ดาวน์โหลด: {path}",
+  "@savedToDownloads": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "exportSuccessSharing": "ส่งออกสำเร็จ กำลังแชร์...",
+  "errorExportingCSV": "เกิดข้อผิดพลาดในการส่งออก CSV: {error}",
+  "@errorExportingCSV": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorExportingSQLite": "เกิดข้อผิดพลาดในการส่งออก SQLite: {error}",
+  "@errorExportingSQLite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importSuccess": "นำเข้าข้อมูลสำเร็จ",
+  "errorImportingCSV": "เกิดข้อผิดพลาดในการนำเข้าจาก CSV: {error}",
+  "@errorImportingCSV": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorImportingSQLite": "เกิดข้อผิดพลาดในการนำเข้าจาก SQLite: {error}",
+  "@errorImportingSQLite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "timeToCompleteHabit": "ได้เวลาทำนิสัย {habitName} แล้ว",
+  "@timeToCompleteHabit": {
+    "placeholders": {
+      "habitName": {
+        "type": "String"
+      }
+    }
+  },
+  "colorScheme": "ชุดสี",
+  "selectColorScheme": "เลือกชุดสี",
+  "dailyRemindersSubtitle": "แจ้งเตือนรายวันเวลา 8:00 และ 20:00 น.",
+  "dailyRemindersEnabledMessage": "เปิดการแจ้งเตือนรายวันแล้ว (08:00 และ 20:00 น.)",
+  "morningGreetingTitle": "สวัสดีตอนเช้า! ☀️",
+  "morningGreetingBody": "ได้เวลาตรวจสอบกิจวัตร และเริ่มต้นวันใหม่อย่างสดใส",
+  "eveningGreetingTitle": "สวัสดีตอนค่ำ! 🌙",
+  "eveningGreetingBody": "ทำกิจวัตรของวันนี้ครบหรือยัง? รักษาสถิติต่อไปนะ!",
+  "statsExplanationTitle": "คำอธิบายสถิติ",
+  "statsExplanationBody": "หน้านี้แสดงภาพรวมความก้าวหน้าของคุณ โดยเริ่มจากจำนวนกิจวัตรทั้งหมดที่คุณกำลังฝึกฝน และยอดรวมครั้งที่ทำสำเร็จทั้งหมด (Total Completions) ส่วนคะแนนความสำเร็จนั้นคำนวณเป็นเปอร์เซ็นต์จากความสม่ำเสมอของคุณ (วันที่ทำได้จริงหารด้วยวันที่ต้องทำทั้งหมด) และเราได้จัดอันดับ (Leaderboard) เพื่อให้คุณเห็นว่ากิจวัตรไหนที่คุณทำได้ดีที่สุด",
+  "close": "ปิด",
+  "score": "คะแนน",
+  "streak": "ทำต่อเนื่อง",
+  "hours": "ชั่วโมง",
+  "minutes": "นาที",
+  "heatmap": "ตารางความถี่",
+  "heatmapTimeRange": "3 เดือนล่าสุด",
+  "heatmapLess": "น้อย",
+  "heatmapMore": "มาก",
+  "sort": "เรียงลำดับ",
+  "sortDefault": "ค่าเริ่มต้น",
+  "sortNewest": "ใหม่ล่าสุด",
+  "sortOldest": "เก่าที่สุด",
+  "addNote": "เพิ่มโน้ต",
+  "editNote": "แก้ไขโน้ต",
+  "noteHint": "ใส่ข้อความ..."
 }

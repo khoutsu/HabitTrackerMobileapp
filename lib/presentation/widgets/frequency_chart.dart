@@ -17,13 +17,20 @@ class FrequencyChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Group repetitions by day for a weekly view (last 7 days)
+    // Group repetitions by day for a weekly view (last 7 days including today)
     Map<int, int> dailyCounts = {};
     final now = DateTime.now();
-    for (int i = 6; i >= 0; i--) {
-      final day = now.subtract(Duration(days: i));
-      dailyCounts[day.weekday] = 0; // Initialize counts for last 7 days
+    final today = DateTime(now.year, now.month, now.day);
+
+    // Initialize counts for last 7 days (including today)
+    for (int i = 0; i < 7; i++) {
+      final day = today.subtract(Duration(days: i));
+      dailyCounts[day.weekday] = 0;
     }
+
+    // Populate counts
+    // We only care about reps in the window [today-6d, today]
+    final startWindow = today.subtract(const Duration(days: 6));
 
     for (var rep in repetitions) {
       final repDay = DateTime(
@@ -31,8 +38,9 @@ class FrequencyChart extends StatelessWidget {
         rep.timestamp.month,
         rep.timestamp.day,
       );
-      if (repDay.isAfter(now.subtract(const Duration(days: 7))) &&
-          (repDay.isBefore(now) || repDay.isAtSameMomentAs(now))) {
+
+      // Check if repDay is within [startWindow, today] inclusive
+      if (!repDay.isBefore(startWindow) && !repDay.isAfter(today)) {
         dailyCounts[repDay.weekday] = (dailyCounts[repDay.weekday] ?? 0) + 1;
       }
     }
@@ -40,6 +48,12 @@ class FrequencyChart extends StatelessWidget {
     // Prepare data for BarChart
     List<BarChartGroupData> barGroups = [];
     double maxY = 0;
+
+    // We want to show bars in order: Mon..Sun or Today-6..Today?
+    // The previous implementation used x=1..7 (Mon..Sun).
+    // This is a "Weekly Activity Pattern" chart.
+    // So we iterate 1 to 7.
+
     for (int i = 1; i <= 7; i++) {
       // Weekday 1 is Monday, 7 is Sunday
       final count = dailyCounts[i] ?? 0;

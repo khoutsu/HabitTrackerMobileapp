@@ -3,20 +3,101 @@ import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 import 'app_text_styles.dart';
 
+enum AppThemeStyle {
+  original,
+  modern,
+  energetic,
+  minimal,
+  lush,
+  azure,
+  regal,
+  crimson,
+  blossom,
+}
+
 class AppTheme {
-  static ThemeData get lightTheme {
+  static ThemeData lightTheme(AppThemeStyle style) {
+    Color primary, primaryLight, onPrimary, secondary, onSecondary;
+
+    switch (style) {
+      case AppThemeStyle.modern:
+        primary = AppColors.modernPrimary;
+        primaryLight = AppColors.modernPrimaryLight;
+        onPrimary = AppColors.white;
+        secondary = AppColors.modernAccent;
+        onSecondary = AppColors.white;
+        break;
+      case AppThemeStyle.energetic:
+        primary = AppColors.energeticPrimary;
+        primaryLight = AppColors.energeticPrimaryLight;
+        onPrimary = AppColors.white;
+        secondary = AppColors.energeticAccent;
+        onSecondary = AppColors.white;
+        break;
+      case AppThemeStyle.minimal:
+        primary = AppColors.textPrimary; // Slate 900
+        primaryLight = AppColors.textSecondary; // Slate 500
+        onPrimary = AppColors.white;
+        secondary = AppColors.textPrimary; // Mono
+        onSecondary = AppColors.white;
+        break;
+      case AppThemeStyle.lush:
+        primary = AppColors.lushPrimary;
+        primaryLight = AppColors.lushPrimaryLight;
+        onPrimary = AppColors.white;
+        secondary = AppColors.lushAccent;
+        onSecondary = AppColors.white;
+        break;
+      case AppThemeStyle.azure:
+        primary = AppColors.azurePrimary;
+        primaryLight = AppColors.azurePrimaryLight;
+        onPrimary = AppColors.white;
+        secondary = AppColors.azureAccent;
+        onSecondary = AppColors.white;
+        break;
+      case AppThemeStyle.regal:
+        primary = AppColors.regalPrimary;
+        primaryLight = AppColors.regalPrimaryLight;
+        onPrimary = AppColors.white;
+        secondary = AppColors.regalAccent;
+        onSecondary = AppColors.white;
+        break;
+      case AppThemeStyle.crimson:
+        primary = AppColors.crimsonPrimary;
+        primaryLight = AppColors.crimsonPrimaryLight;
+        onPrimary = AppColors.white;
+        secondary = AppColors.crimsonAccent;
+        onSecondary = AppColors.white;
+        break;
+      case AppThemeStyle.blossom:
+        primary = AppColors.blossomPrimary;
+        primaryLight = AppColors.blossomPrimaryLight;
+        onPrimary = AppColors.white;
+        secondary = AppColors.blossomAccent;
+        onSecondary = AppColors.black; // Better contrast on light yellow accent
+        break;
+      case AppThemeStyle.original:
+        primary = AppColors.primary; // Indigo 500
+        primaryLight = AppColors.primaryLight;
+        onPrimary = AppColors.white;
+        secondary = AppColors.accent; // Rose 500
+        onSecondary = AppColors.white;
+        break;
+    }
+
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.primary,
+        seedColor: primary,
         brightness: Brightness.light,
         background: AppColors.background,
         surface: AppColors.surface,
-        primary: AppColors.primary,
-        onPrimary: AppColors.white,
-        secondary: AppColors.accent,
-        onSecondary: AppColors.white,
+        primary: primary,
+        primaryContainer: primaryLight, // Use primaryLight here
+        onPrimary: onPrimary,
+        secondary: secondary,
+        onSecondary: onSecondary,
         error: Colors.red.shade400,
         onError: AppColors.white,
         onBackground: AppColors.textPrimary,
@@ -45,8 +126,8 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.white,
+          backgroundColor: primary,
+          foregroundColor: onPrimary,
           elevation: 0,
           textStyle: AppTextStyles.textTheme.labelLarge?.copyWith(
             fontWeight: FontWeight.bold,
@@ -57,35 +138,104 @@ class AppTheme {
           ),
         ),
       ),
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.white,
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: primary,
+        foregroundColor: onPrimary,
         elevation: 4,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(16)),
         ),
       ),
     );
   }
 
-  static ThemeData get darkTheme {
+  static ThemeData darkTheme(AppThemeStyle style) {
     final darkTextTheme = AppTextStyles.textTheme.apply(
       bodyColor: AppColors.textPrimaryDark,
       displayColor: AppColors.textPrimaryDark,
     );
 
+    Color primary, primaryLight, onPrimary, secondary, onSecondary;
+
+    switch (style) {
+      case AppThemeStyle.modern:
+        primary = AppColors.modernPrimaryLight; // Lighter for dark mode
+        primaryLight = AppColors.modernPrimary;
+        onPrimary = AppColors.backgroundDark;
+        secondary = AppColors.modernAccent;
+        onSecondary = AppColors.backgroundDark;
+        break;
+      case AppThemeStyle.energetic:
+        primary = AppColors.energeticPrimaryLight;
+        primaryLight = AppColors.energeticPrimary;
+        onPrimary = AppColors.backgroundDark;
+        secondary = AppColors.energeticAccent;
+        onSecondary = AppColors.backgroundDark;
+        break;
+      case AppThemeStyle.minimal:
+        primary = AppColors.white; // White for contrast
+        primaryLight = AppColors.textSecondaryDark;
+        onPrimary = AppColors.black;
+        secondary = AppColors.white;
+        onSecondary = AppColors.black;
+        break;
+      case AppThemeStyle.lush:
+        primary = AppColors.lushPrimaryLight;
+        primaryLight = AppColors.lushPrimary;
+        onPrimary = AppColors.backgroundDark;
+        secondary = AppColors.lushAccent;
+        onSecondary = AppColors.backgroundDark;
+        break;
+      case AppThemeStyle.azure:
+        primary = AppColors.azurePrimaryLight;
+        primaryLight = AppColors.azurePrimary;
+        onPrimary = AppColors.backgroundDark;
+        secondary = AppColors.azureAccent;
+        onSecondary = AppColors.backgroundDark;
+        break;
+      case AppThemeStyle.regal:
+        primary = AppColors.regalPrimaryLight;
+        primaryLight = AppColors.regalPrimary;
+        onPrimary = AppColors.backgroundDark;
+        secondary = AppColors.regalAccent;
+        onSecondary = AppColors.backgroundDark;
+        break;
+      case AppThemeStyle.crimson:
+        primary = AppColors.crimsonPrimaryLight;
+        primaryLight = AppColors.crimsonPrimary;
+        onPrimary = AppColors.backgroundDark;
+        secondary = AppColors.crimsonAccent;
+        onSecondary = AppColors.backgroundDark;
+        break;
+      case AppThemeStyle.blossom:
+        primary = AppColors.blossomPrimaryLight;
+        primaryLight = AppColors.blossomPrimary;
+        onPrimary = AppColors.backgroundDark;
+        secondary = AppColors.blossomAccent;
+        onSecondary = AppColors.backgroundDark;
+        break;
+      case AppThemeStyle.original:
+        primary = AppColors.primaryLight;
+        primaryLight = AppColors.primary;
+        onPrimary = AppColors.backgroundDark;
+        secondary = AppColors.accentLight;
+        onSecondary = AppColors.backgroundDark;
+        break;
+    }
+
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.primary,
+        seedColor: primary,
         brightness: Brightness.dark,
         background: AppColors.backgroundDark,
         surface: AppColors.surfaceDark,
-        primary: AppColors.primaryLight,
-        onPrimary: AppColors.backgroundDark,
-        secondary: AppColors.accentLight,
-        onSecondary: AppColors.backgroundDark,
+        primary: primary,
+        primaryContainer: primaryLight, // Use primaryLight here
+        onPrimary: onPrimary,
+        secondary: secondary,
+        onSecondary: onSecondary,
         error: Colors.red.shade300,
         onError: AppColors.backgroundDark,
         onBackground: AppColors.textPrimaryDark,
@@ -114,11 +264,11 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryLight,
-          foregroundColor: AppColors.backgroundDark,
+          backgroundColor: primary, // Usually Primary Light in dark mode
+          foregroundColor: onPrimary,
           elevation: 0,
           textStyle: AppTextStyles.textTheme.labelLarge?.copyWith(
-            color: AppColors.backgroundDark,
+            color: onPrimary,
             fontWeight: FontWeight.bold,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -127,11 +277,11 @@ class AppTheme {
           ),
         ),
       ),
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: AppColors.primaryLight,
-        foregroundColor: AppColors.backgroundDark,
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: primary,
+        foregroundColor: onPrimary,
         elevation: 4,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(16)),
         ),
       ),

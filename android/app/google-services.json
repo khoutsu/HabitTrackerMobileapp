@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "174731398064",
+    "project_id": "foodrecipeapp-60da6",
+    "storage_bucket": "foodrecipeapp-60da6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:174731398064:android:7037d9b4ae97202630e475",
+        "android_client_info": {
+          "package_name": "com.example.loop_habit_tracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWSLjy7SMrDVugHf7nNhitdeoRCLpZSBk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

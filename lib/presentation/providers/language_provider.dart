@@ -3,9 +3,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LanguageProvider with ChangeNotifier, WidgetsBindingObserver {
   static const String _languageCodeKey = 'language_code';
-  Locale? _appLocale;
+  Locale _appLocale = const Locale('en'); // Default to English
 
-  Locale? get appLocale => _appLocale;
+  Locale get appLocale => _appLocale;
 
   LanguageProvider() {
     _loadLocale();
@@ -21,10 +21,21 @@ class LanguageProvider with ChangeNotifier, WidgetsBindingObserver {
   void _loadLocale() async {
     final prefs = await SharedPreferences.getInstance();
     final languageCode = prefs.getString(_languageCodeKey);
+
     if (languageCode != null) {
       _appLocale = Locale(languageCode);
-      notifyListeners();
+    } else {
+      // First time launch: Detect device language
+      final systemLocale = WidgetsBinding.instance.platformDispatcher.locale;
+      if (systemLocale.languageCode == 'th') {
+        _appLocale = const Locale('th');
+      } else {
+        _appLocale = const Locale('en');
+      }
+      // Save it so it's not "null" anymore
+      await prefs.setString(_languageCodeKey, _appLocale.languageCode);
     }
+    notifyListeners();
   }
 
   Future<String?> getSavedLanguageCode() async {
@@ -32,24 +43,17 @@ class LanguageProvider with ChangeNotifier, WidgetsBindingObserver {
     return prefs.getString(_languageCodeKey);
   }
 
-  Future<void> setLocale(Locale? locale) async {
+  Future<void> setLocale(Locale locale) async {
     _appLocale = locale;
     final prefs = await SharedPreferences.getInstance();
-    if (locale == null) {
-      await prefs.remove(_languageCodeKey);
-    } else {
-      await prefs.setString(_languageCodeKey, locale.languageCode);
-    }
+    await prefs.setString(_languageCodeKey, locale.languageCode);
     notifyListeners();
   }
 
   @override
   void didChangeLocales(List<Locale>? locales) {
-    // If the app is currently using the system default locale
-    if (_appLocale == null) {
-      // Trigger a rebuild to pick up the new system locale
-      notifyListeners();
-    }
+    // We no longer track system changes automatically if we've locked it to a choice,
+    // but the requirement says "detect at first", so we don't need to respond here.
   }
 
   @override

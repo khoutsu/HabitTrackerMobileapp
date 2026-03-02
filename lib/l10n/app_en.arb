@@ -72,7 +72,7 @@
   "weekends": "Weekends",
   "successRate": "Success Rate",
   "frequencyLast7Days": "Frequency (Last 7 Days)",
-  "habitStrengthLast30Days": "Habit Strength (Last 30 Days)",
+  "habitStrengthLast30Days": "Frequency of doing the habit (Last 30 Days)",
   "cannotSkipCompleted": "Cannot skip a completed day.",
   "skipDay": "Skip Day",
   "unskipDay": "Un-skip Day",
@@ -147,9 +147,115 @@
   "showAll": "Show All",
   "showLess": "Show Less",
   "habitTypeHelpTitle": "Habit Types",
-  "habitTypeHelpBody": "1. **Regular:** Simple Yes/No check (e.g., Wake up early)\n2. **Numeric:** Track a number (e.g., Drink 8 glasses)\n3. **Timed:** Track duration (e.g., Meditate 15 mins)",
+  "habitTypeHelpBody": "1. Regular: Simple Yes/No check (e.g., Wake up early)\n2. Numeric: Track a number (e.g., Drink 8 glasses)\n3. Timed: Track duration (e.g., Meditate 15 mins)",
   "goalHelpTitle": "Goal Periods",
-  "goalHelpBody": "1. **Daily:** Resets every day.\n2. **Weekly:** Resets every Monday.\n3. **Monthly:** Resets on the 1st of the month.\n4. **All Time:** Never resets (Accumulates forever).",
+  "goalHelpBody": "1. Daily: Resets every day.\n2. Weekly: Resets every Monday.\n3. Monthly: Resets on the 1st of the month.\n4. All Time: Never resets (Accumulates forever).",
   "frequencyHelpTitle": "Frequency",
-  "frequencyHelpBody": "1. **Daily:** Everyday, Weekdays, or Weekends.\n2. **Weekly:** specific days (Mon-Sun).\n3. **Monthly:** Once a month (Select specific months).\n4. **Custom:** Repeat every X days (e.g. Every 2 days = Every other day)."
+  "frequencyHelpBody": "1. Daily: Everyday, Weekdays, or Weekends.\n2. Weekly: specific days (Mon-Sun).\n3. Monthly: Once a month (Select specific months).\n4. Custom: Repeat every X days (e.g. Every 2 days = Every other day).",
+  "all": "All",
+  "completeGoal": "Complete Goal?",
+  "completeGoalConfirmation": "Mark remaining {count} times as done to finish the goal?",
+  "@completeGoalConfirmation": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "chooseAction": "Choose Action",
+  "markAsDone": "Mark as Done",
+  "shareExportCSV": "Loop Habit Tracker Export (CSV)",
+  "shareBackupSQLite": "Loop Habit Tracker Backup (SQLite)",
+  "loopHabitTrackerBackup": "Loop Habit Tracker Backup",
+  "reminders": "Reminders",
+  "reminderTime": "Reminder Time",
+  "exportData": "Export Data",
+  "exportToCSV": "Export to CSV",
+  "exportToSQLite": "Export to SQLite",
+  "importData": "Import Data",
+  "importFromCSV": "Import from CSV",
+  "importFromSQLite": "Import from SQLite",
+  "backupHistory": "Backup History",
+  "noBackupFilesFound": "No backup files found.",
+  "statisticsOverview": "Statistics Overview",
+  "overallSummary": "Overall Summary",
+  "totalHabits": "Total Habits",
+  "noHabitsToRank": "No habits to rank.",
+  "habitLeaderboard": "Habit Leaderboard",
+  "savedToDownloads": "Saved to Downloads folder: {path}",
+  "@savedToDownloads": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "exportSuccessSharing": "Exported successfully. Sharing...",
+  "errorExportingCSV": "Error exporting to CSV: {error}",
+  "@errorExportingCSV": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorExportingSQLite": "Error exporting to SQLite: {error}",
+  "@errorExportingSQLite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importSuccess": "Import successful.",
+  "errorImportingCSV": "Error importing from CSV: {error}",
+  "@errorImportingCSV": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorImportingSQLite": "Error importing from SQLite: {error}",
+  "@errorImportingSQLite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "timeToCompleteHabit": "It's time to complete {habitName}",
+  "@timeToCompleteHabit": {
+    "placeholders": {
+      "habitName": {
+        "type": "String"
+      }
+    }
+  },
+  "colorScheme": "Color Scheme",
+  "selectColorScheme": "Select Color Scheme",
+  "dailyRemindersSubtitle": "Daily reminders at 8 AM & 8 PM",
+  "dailyRemindersEnabledMessage": "Daily reminders enabled for 8:00 AM & 8:00 PM",
+  "morningGreetingTitle": "Good Morning! ☀️",
+  "morningGreetingBody": "Time to check your habits and start the day strong.",
+  "eveningGreetingTitle": "Good Evening! 🌙",
+  "eveningGreetingBody": "Have you completed your habits for today? Don't break the streak!",
+  "statsExplanationTitle": "Statistics Explained",
+  "statsExplanationBody": "1. Total Habits: The number of habits being tracked.\n2. Total Completions: The total number of days all habits have been completed.\n3. Habit Score: A score based on consistency and streaks.\n4. Leaderboard: Ranks your habits by their success score.",
+  "close": "Close",
+  "score": "Score",
+  "streak": "Streak",
+  "hours": "Hours",
+  "minutes": "Minutes",
+  "heatmap": "Heatmap",
+  "heatmapTimeRange": "Last 3 Months",
+  "heatmapLess": "Less",
+  "heatmapMore": "More",
+  "sort": "Sort",
+  "sortDefault": "Default",
+  "sortNewest": "Newest",
+  "sortOldest": "Oldest",
+  "addNote": "Add Note",
+  "editNote": "Edit Note",
+  "noteHint": "Enter note here..."
 }

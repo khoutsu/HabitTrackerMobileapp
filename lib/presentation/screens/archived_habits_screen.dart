@@ -6,6 +6,8 @@ import 'package:loop_habit_tracker/presentation/widgets/habit_card.dart';
 import 'package:loop_habit_tracker/presentation/widgets/loading_habit_list.dart';
 import 'package:loop_habit_tracker/presentation/widgets/empty_state.dart';
 import 'package:loop_habit_tracker/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
+import 'package:loop_habit_tracker/presentation/providers/habit_update_provider.dart';
 
 class ArchivedHabitsScreen extends StatefulWidget {
   const ArchivedHabitsScreen({super.key});
@@ -19,22 +21,46 @@ class _ArchivedHabitsScreenState extends State<ArchivedHabitsScreen> {
   List<Habit> _archivedHabits = [];
   bool _isLoading = true;
 
+  int _lastUpdateCount = -1;
+
   @override
   void initState() {
     super.initState();
     _loadArchivedHabits();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Listen for updates when this screen is visible/active
+    final updateCount = context.watch<HabitUpdateProvider>().updateCount;
+    if (updateCount != _lastUpdateCount) {
+      _lastUpdateCount = updateCount;
+      _loadArchivedHabits();
+    }
+  }
+
   Future<void> _loadArchivedHabits() async {
-    setState(() {
-      _isLoading = true;
-    });
+    // Only set loading true if it's the first load or explicit refresh interaction
+    // to avoid flickering on every provider update if desired.
+    // However, for simplicity and ensuring user sees update, we keep it or optimize.
+    // Let's optimize: only show full loading if list is empty.
+    if (_archivedHabits.isEmpty) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
+
     try {
-      _archivedHabits = await _habitRepository.getArchivedHabits();
+      final habits = await _habitRepository.getArchivedHabits();
+      if (mounted) {
+        setState(() {
+          _archivedHabits = habits;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      // Handle error
       print('Error loading archived habits: $e');
-    } finally {
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -45,7 +71,10 @@ class _ArchivedHabitsScreenState extends State<ArchivedHabitsScreen> {
 
   Future<void> _unarchiveHabit(int habitId) async {
     await _habitRepository.unarchiveHabit(habitId);
-    _loadArchivedHabits();
+    if (mounted) {
+      context.read<HabitUpdateProvider>().notifyUpdated();
+      _loadArchivedHabits();
+    }
   }
 
   Future<void> _deleteHabit(BuildContext context, Habit habit) async {
@@ -71,7 +100,10 @@ class _ArchivedHabitsScreenState extends State<ArchivedHabitsScreen> {
 
     if (confirm == true) {
       await _habitRepository.deleteHabit(habit.id!);
-      _loadArchivedHabits();
+      if (mounted) {
+        context.read<HabitUpdateProvider>().notifyUpdated();
+        _loadArchivedHabits();
+      }
     }
   }
 
@@ -82,53 +114,51 @@ class _ArchivedHabitsScreenState extends State<ArchivedHabitsScreen> {
       body: _isLoading
           ? const LoadingHabitList()
           : _archivedHabits.isEmpty
-              ? EmptyState(
-                  message: AppLocalizations.of(context)!.noArchivedHabits)
-              : ListView.builder(
-                  itemCount: _archivedHabits.length,
-                  itemBuilder: (context, index) {
-                    final habit = _archivedHabits[index];
-                    return Slidable(
-                      key: ValueKey(habit.id),
-                      endActionPane: ActionPane(
-                        motion: const ScrollMotion(),
-                        children: [
-                          SlidableAction(
-                            onPressed: (context) => _unarchiveHabit(habit.id!),
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
-                            icon: Icons.unarchive,
-                            label: AppLocalizations.of(context)!.restoreHabit,
-                          ),
-                          SlidableAction(
-                            onPressed: (context) => _deleteHabit(context, habit),
-                            backgroundColor: Colors.red,
-                            foregroundColor: Colors.white,
-                            icon: Icons.delete_forever,
-                            label: AppLocalizations.of(context)!.deletePermanently,
-                            borderRadius: const BorderRadius.only(
-                              topRight: Radius.circular(12),
-                              bottomRight: Radius.circular(12),
-                            ),
-                          ),
-                        ],
+          ? EmptyState(message: AppLocalizations.of(context)!.noArchivedHabits)
+          : ListView.builder(
+              itemCount: _archivedHabits.length,
+              itemBuilder: (context, index) {
+                final habit = _archivedHabits[index];
+                return Slidable(
+                  key: ValueKey(habit.id),
+                  endActionPane: ActionPane(
+                    motion: const ScrollMotion(),
+                    children: [
+                      SlidableAction(
+                        onPressed: (context) => _unarchiveHabit(habit.id!),
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        icon: Icons.unarchive,
+                        label: AppLocalizations.of(context)!.restoreHabit,
                       ),
-                      child: HabitCard(
-                        habit: habit,
-                        streak: 0, // No streak for archived habits
-                        repetitionsToday:
-                            [], // No repetitions for archived habits
-                        onTap: () {
-                          // No-op, handled by slidable
-                        },
-                        onStateChanged: () {
-                          // Do nothing, or maybe refresh list if needed in future
-                          _loadArchivedHabits();
-                        },
+                      SlidableAction(
+                        onPressed: (context) => _deleteHabit(context, habit),
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        icon: Icons.delete_forever,
+                        label: AppLocalizations.of(context)!.deletePermanently,
+                        borderRadius: const BorderRadius.only(
+                          topRight: Radius.circular(12),
+                          bottomRight: Radius.circular(12),
+                        ),
                       ),
-                    );
-                  },
-                ),
+                    ],
+                  ),
+                  child: HabitCard(
+                    habit: habit,
+                    streak: 0, // No streak for archived habits
+                    repetitionsToday: [], // No repetitions for archived habits
+                    onTap: () {
+                      // No-op, handled by slidable
+                    },
+                    onStateChanged: () {
+                      // Do nothing, or maybe refresh list if needed in future
+                      _loadArchivedHabits();
+                    },
+                  ),
+                );
+              },
+            ),
     );
   }
 }

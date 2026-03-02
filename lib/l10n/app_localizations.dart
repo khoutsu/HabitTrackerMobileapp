@@ -443,7 +443,7 @@ abstract class AppLocalizations {
   /// No description provided for @habitStrengthLast30Days.
   ///
   /// In en, this message translates to:
-  /// **'Habit Strength (Last 30 Days)'**
+  /// **'Frequency of doing the habit (Last 30 Days)'**
   String get habitStrengthLast30Days;
 
   /// No description provided for @cannotSkipCompleted.
@@ -755,7 +755,7 @@ abstract class AppLocalizations {
   /// No description provided for @habitTypeHelpBody.
   ///
   /// In en, this message translates to:
-  /// **'1. **Regular:** Simple Yes/No check (e.g., Wake up early)\n2. **Numeric:** Track a number (e.g., Drink 8 glasses)\n3. **Timed:** Track duration (e.g., Meditate 15 mins)'**
+  /// **'1. Regular: Simple Yes/No check (e.g., Wake up early)\n2. Numeric: Track a number (e.g., Drink 8 glasses)\n3. Timed: Track duration (e.g., Meditate 15 mins)'**
   String get habitTypeHelpBody;
 
   /// No description provided for @goalHelpTitle.
@@ -767,7 +767,7 @@ abstract class AppLocalizations {
   /// No description provided for @goalHelpBody.
   ///
   /// In en, this message translates to:
-  /// **'1. **Daily:** Resets every day.\n2. **Weekly:** Resets every Monday.\n3. **Monthly:** Resets on the 1st of the month.\n4. **All Time:** Never resets (Accumulates forever).'**
+  /// **'1. Daily: Resets every day.\n2. Weekly: Resets every Monday.\n3. Monthly: Resets on the 1st of the month.\n4. All Time: Never resets (Accumulates forever).'**
   String get goalHelpBody;
 
   /// No description provided for @frequencyHelpTitle.
@@ -779,8 +779,350 @@ abstract class AppLocalizations {
   /// No description provided for @frequencyHelpBody.
   ///
   /// In en, this message translates to:
-  /// **'1. **Daily:** Everyday, Weekdays, or Weekends.\n2. **Weekly:** specific days (Mon-Sun).\n3. **Monthly:** Once a month (Select specific months).\n4. **Custom:** Repeat every X days (e.g. Every 2 days = Every other day).'**
+  /// **'1. Daily: Everyday, Weekdays, or Weekends.\n2. Weekly: specific days (Mon-Sun).\n3. Monthly: Once a month (Select specific months).\n4. Custom: Repeat every X days (e.g. Every 2 days = Every other day).'**
   String get frequencyHelpBody;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @completeGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Goal?'**
+  String get completeGoal;
+
+  /// No description provided for @completeGoalConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark remaining {count} times as done to finish the goal?'**
+  String completeGoalConfirmation(String count);
+
+  /// No description provided for @chooseAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Action'**
+  String get chooseAction;
+
+  /// No description provided for @markAsDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as Done'**
+  String get markAsDone;
+
+  /// No description provided for @shareExportCSV.
+  ///
+  /// In en, this message translates to:
+  /// **'Loop Habit Tracker Export (CSV)'**
+  String get shareExportCSV;
+
+  /// No description provided for @shareBackupSQLite.
+  ///
+  /// In en, this message translates to:
+  /// **'Loop Habit Tracker Backup (SQLite)'**
+  String get shareBackupSQLite;
+
+  /// No description provided for @loopHabitTrackerBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Loop Habit Tracker Backup'**
+  String get loopHabitTrackerBackup;
+
+  /// No description provided for @reminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders'**
+  String get reminders;
+
+  /// No description provided for @reminderTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder Time'**
+  String get reminderTime;
+
+  /// No description provided for @exportData.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Data'**
+  String get exportData;
+
+  /// No description provided for @exportToCSV.
+  ///
+  /// In en, this message translates to:
+  /// **'Export to CSV'**
+  String get exportToCSV;
+
+  /// No description provided for @exportToSQLite.
+  ///
+  /// In en, this message translates to:
+  /// **'Export to SQLite'**
+  String get exportToSQLite;
+
+  /// No description provided for @importData.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Data'**
+  String get importData;
+
+  /// No description provided for @importFromCSV.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from CSV'**
+  String get importFromCSV;
+
+  /// No description provided for @importFromSQLite.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from SQLite'**
+  String get importFromSQLite;
+
+  /// No description provided for @backupHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup History'**
+  String get backupHistory;
+
+  /// No description provided for @noBackupFilesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No backup files found.'**
+  String get noBackupFilesFound;
+
+  /// No description provided for @statisticsOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics Overview'**
+  String get statisticsOverview;
+
+  /// No description provided for @overallSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall Summary'**
+  String get overallSummary;
+
+  /// No description provided for @totalHabits.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Habits'**
+  String get totalHabits;
+
+  /// No description provided for @noHabitsToRank.
+  ///
+  /// In en, this message translates to:
+  /// **'No habits to rank.'**
+  String get noHabitsToRank;
+
+  /// No description provided for @habitLeaderboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Habit Leaderboard'**
+  String get habitLeaderboard;
+
+  /// No description provided for @savedToDownloads.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to Downloads folder: {path}'**
+  String savedToDownloads(String path);
+
+  /// No description provided for @exportSuccessSharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Exported successfully. Sharing...'**
+  String get exportSuccessSharing;
+
+  /// No description provided for @errorExportingCSV.
+  ///
+  /// In en, this message translates to:
+  /// **'Error exporting to CSV: {error}'**
+  String errorExportingCSV(String error);
+
+  /// No description provided for @errorExportingSQLite.
+  ///
+  /// In en, this message translates to:
+  /// **'Error exporting to SQLite: {error}'**
+  String errorExportingSQLite(String error);
+
+  /// No description provided for @importSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Import successful.'**
+  String get importSuccess;
+
+  /// No description provided for @errorImportingCSV.
+  ///
+  /// In en, this message translates to:
+  /// **'Error importing from CSV: {error}'**
+  String errorImportingCSV(String error);
+
+  /// No description provided for @errorImportingSQLite.
+  ///
+  /// In en, this message translates to:
+  /// **'Error importing from SQLite: {error}'**
+  String errorImportingSQLite(String error);
+
+  /// No description provided for @timeToCompleteHabit.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s time to complete {habitName}'**
+  String timeToCompleteHabit(String habitName);
+
+  /// No description provided for @colorScheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Color Scheme'**
+  String get colorScheme;
+
+  /// No description provided for @selectColorScheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Color Scheme'**
+  String get selectColorScheme;
+
+  /// No description provided for @dailyRemindersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily reminders at 8 AM & 8 PM'**
+  String get dailyRemindersSubtitle;
+
+  /// No description provided for @dailyRemindersEnabledMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily reminders enabled for 8:00 AM & 8:00 PM'**
+  String get dailyRemindersEnabledMessage;
+
+  /// No description provided for @morningGreetingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Good Morning! ☀️'**
+  String get morningGreetingTitle;
+
+  /// No description provided for @morningGreetingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Time to check your habits and start the day strong.'**
+  String get morningGreetingBody;
+
+  /// No description provided for @eveningGreetingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Good Evening! 🌙'**
+  String get eveningGreetingTitle;
+
+  /// No description provided for @eveningGreetingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Have you completed your habits for today? Don\'t break the streak!'**
+  String get eveningGreetingBody;
+
+  /// No description provided for @statsExplanationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics Explained'**
+  String get statsExplanationTitle;
+
+  /// No description provided for @statsExplanationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Total Habits: The number of habits being tracked.\n2. Total Completions: The total number of days all habits have been completed.\n3. Habit Score: A score based on consistency and streaks.\n4. Leaderboard: Ranks your habits by their success score.'**
+  String get statsExplanationBody;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @score.
+  ///
+  /// In en, this message translates to:
+  /// **'Score'**
+  String get score;
+
+  /// No description provided for @streak.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak'**
+  String get streak;
+
+  /// No description provided for @hours.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours'**
+  String get hours;
+
+  /// No description provided for @minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes'**
+  String get minutes;
+
+  /// No description provided for @heatmap.
+  ///
+  /// In en, this message translates to:
+  /// **'Heatmap'**
+  String get heatmap;
+
+  /// No description provided for @heatmapTimeRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 3 Months'**
+  String get heatmapTimeRange;
+
+  /// No description provided for @heatmapLess.
+  ///
+  /// In en, this message translates to:
+  /// **'Less'**
+  String get heatmapLess;
+
+  /// No description provided for @heatmapMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get heatmapMore;
+
+  /// No description provided for @sort.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort'**
+  String get sort;
+
+  /// No description provided for @sortDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get sortDefault;
+
+  /// No description provided for @sortNewest.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest'**
+  String get sortNewest;
+
+  /// No description provided for @sortOldest.
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest'**
+  String get sortOldest;
+
+  /// No description provided for @addNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Note'**
+  String get addNote;
+
+  /// No description provided for @editNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Note'**
+  String get editNote;
+
+  /// No description provided for @noteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter note here...'**
+  String get noteHint;
 }
 
 class _AppLocalizationsDelegate

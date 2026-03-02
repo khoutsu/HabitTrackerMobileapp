@@ -11,13 +11,13 @@ class CalculateStreak {
     List<Skip> skips,
     DateTime currentDate,
   ) {
-    if (habit.createdAt.isAfter(currentDate)) {
-      return {'currentStreak': 0, 'longestStreak': 0}; // Habit not yet started
-    }
+    // Remove strict time check to allow for "Same Day" calculation logic
+    // if (habit.createdAt.isAfter(currentDate)) return ...;
 
-    final sortedRepetitions = repetitions
-        .where((rep) => !rep.timestamp.isAfter(currentDate))
-        .toList();
+    final sortedRepetitions = repetitions;
+    // Strict filtering removed to allow "Same Day" data
+    // .where((rep) => !rep.timestamp.isAfter(currentDate))
+    // .toList();
 
     // Aggregate repetition values by date
     final Map<DateTime, double> dailyValues = {};
@@ -137,6 +137,11 @@ class CalculateStreak {
           streakBroken = true;
         }
       }
+      // Non-scheduled day: if user completed anyway (bonus day), count it
+      // but don't break streak if not completed on a non-scheduled day
+      else if (isCompleted) {
+        currentStreak++;
+      }
       dayIteratorForCurrent = dayIteratorForCurrent.subtract(
         const Duration(days: 1),
       );
@@ -148,8 +153,10 @@ class CalculateStreak {
       currentDate.month,
       currentDate.day,
     );
-    if (habit.frequency.shouldDoOnDay(today, habit.createdAt) &&
-        isGoalMet(today)) {
+    final bool isTodayGoalMet = isGoalMet(today);
+
+    // Count today if: scheduled and goal met, OR not scheduled but user completed anyway
+    if (isTodayGoalMet) {
       currentStreak++;
     }
 
@@ -175,6 +182,10 @@ class CalculateStreak {
         } else if (!isSkipped) {
           tempLongestStreak = 0;
         }
+      }
+      // Non-scheduled day: count as bonus if completed
+      else if (isCompleted) {
+        tempLongestStreak++;
       }
 
       if (tempLongestStreak > longestStreak) {

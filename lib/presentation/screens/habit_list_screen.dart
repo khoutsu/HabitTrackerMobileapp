@@ -5,13 +5,9 @@ import 'package:loop_habit_tracker/data/repositories/habit_repository.dart';
 import 'package:loop_habit_tracker/data/repositories/repetition_repository.dart';
 import 'package:loop_habit_tracker/data/repositories/skip_repository.dart';
 import 'package:loop_habit_tracker/domain/usecases/calculate_streak.dart';
-import 'package:loop_habit_tracker/presentation/screens/archived_habits_screen.dart';
-import 'package:loop_habit_tracker/presentation/screens/backup_screen.dart';
 import 'package:loop_habit_tracker/presentation/screens/habit_form_screen.dart';
 import 'package:loop_habit_tracker/presentation/screens/habit_detail_screen.dart';
-import 'package:loop_habit_tracker/presentation/screens/settings_screen.dart';
-import 'package:loop_habit_tracker/presentation/screens/statistics_screen.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+
 import 'package:loop_habit_tracker/presentation/widgets/custom_page_route.dart';
 import 'package:loop_habit_tracker/presentation/widgets/empty_state.dart';
 import 'package:loop_habit_tracker/presentation/widgets/habit_card.dart';
@@ -19,6 +15,11 @@ import 'package:loop_habit_tracker/presentation/widgets/loading_habit_list.dart'
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:loop_habit_tracker/data/models/category_model.dart';
 import 'package:loop_habit_tracker/l10n/app_localizations.dart';
+
+import 'package:provider/provider.dart';
+import 'package:loop_habit_tracker/presentation/providers/habit_update_provider.dart';
+
+enum HabitSortType { manual, name, color, createdNewest, createdOldest }
 
 class HabitListScreen extends StatefulWidget {
   const HabitListScreen({super.key});
@@ -35,6 +36,7 @@ class _HabitListScreenState extends State<HabitListScreen>
   final CalculateStreak _calculateStreak = CalculateStreak();
 
   Map<String, List<Habit>> _groupedHabits = {};
+  List<Habit> _allHabits = [];
   List<Habit> _uncategorizedHabits = [];
   List<String> _categoryOrder = [];
   Map<String, bool> _isPanelExpanded = {};
@@ -43,18 +45,32 @@ class _HabitListScreenState extends State<HabitListScreen>
   Map<int, int> _streaks = {};
   Map<int, Map<String, num>> _goalProgress = {};
   bool _isLoading = true;
+  int _lastUpdateCount = -1; // Track updates from provider
+
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  bool _isSearching = false;
+  HabitSortType _currentSortType = HabitSortType.manual;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _searchController.addListener(_onSearchChanged);
     _loadHabits();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _searchController.dispose();
     super.dispose();
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      _searchQuery = _searchController.text;
+    });
   }
 
   @override
@@ -65,7 +81,7 @@ class _HabitListScreenState extends State<HabitListScreen>
   }
 
   Future<void> _loadHabits() async {
-    if (mounted) {
+    if (mounted && _groupedHabits.isEmpty && _uncategorizedHabits.isEmpty) {
       setState(() {
         _isLoading = true;
       });
@@ -152,14 +168,21 @@ class _HabitListScreenState extends State<HabitListScreen>
                 .toList();
 
             num currentValue = 0;
-            if (habit.habitType == HabitType.numeric) {
+            if (habit.habitType == HabitType.numeric ||
+                habit.habitType == HabitType.yesNo) {
+              // Now we sum values even for yesNo, so we can support 'bulk' completion (value > 1)
               currentValue = relevantRepetitions.fold(
                 0,
                 (sum, rep) => sum + (rep.value ?? 0),
               );
             } else {
-              // yesNo and timed (for now)
-              currentValue = relevantRepetitions.length;
+              // timed
+              // If timed habits store duration in value, we should sum it too.
+              // Assuming 'value' is what we track against goal.
+              currentValue = relevantRepetitions.fold(
+                0,
+                (sum, rep) => sum + (rep.value ?? 0),
+              );
             }
 
             newGoalProgress[habit.id!] = {
@@ -174,6 +197,7 @@ class _HabitListScreenState extends State<HabitListScreen>
 
       if (mounted) {
         setState(() {
+          _allHabits = allHabits;
           _groupedHabits = newGroupedHabits;
           _uncategorizedHabits = newUncategorizedHabits;
           _categoryOrder = newCategoryOrder;
@@ -199,7 +223,11 @@ class _HabitListScreenState extends State<HabitListScreen>
 
   Future<void> _archiveHabit(Habit habit) async {
     await _habitRepository.archiveHabit(habit.id!);
-    await _loadHabits();
+    // Notify provider so ArchivedHabitsScreen updates
+    if (mounted) {
+      context.read<HabitUpdateProvider>().notifyUpdated();
+      await _loadHabits();
+    }
   }
 
   Future<void> _deleteHabit(Habit habit) async {
@@ -225,7 +253,10 @@ class _HabitListScreenState extends State<HabitListScreen>
 
     if (confirm == true) {
       await _habitRepository.deleteHabit(habit.id!);
-      await _loadHabits();
+      if (mounted) {
+        context.read<HabitUpdateProvider>().notifyUpdated();
+        await _loadHabits();
+      }
     }
   }
 
@@ -234,73 +265,188 @@ class _HabitListScreenState extends State<HabitListScreen>
       context,
     ).push(CustomPageRoute(page: HabitFormScreen(habit: habit)));
     if (result == true) {
-      _loadHabits();
+      // Notify provider so ArchivedHabitsScreen updates if properties changed
+      if (mounted) {
+        context.read<HabitUpdateProvider>().notifyUpdated();
+        _loadHabits();
+      }
     }
   }
 
+  void _onReorder(int oldIndex, int newIndex) {
+    if (_selectedCategoryFilter != 'All' ||
+        _searchQuery.isNotEmpty ||
+        _currentSortType != HabitSortType.manual)
+      return;
+
+    setState(() {
+      if (newIndex > oldIndex) {
+        newIndex -= 1;
+      }
+      final habit = _allHabits.removeAt(oldIndex);
+      _allHabits.insert(newIndex, habit);
+    });
+
+    _habitRepository.updateHabitSortOrder(_allHabits);
+  }
+
   Widget _buildHabitList(List<Habit> habits) {
-    return AnimationLimiter(
-      child: ListView(
+    // Determine if reordering should be enabled
+    final isReorderable =
+        _selectedCategoryFilter == 'All' &&
+        _searchQuery.isEmpty &&
+        _currentSortType == HabitSortType.manual;
+
+    if (!isReorderable) {
+      // Fallback to simpler list or non-reorderable for now to avoid confusion
+      // or implement generic list
+      return RefreshIndicator(
+        onRefresh: _loadHabits,
+        child: ListView.builder(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
+          itemCount: habits.length,
+          itemBuilder: (context, index) {
+            final habit = habits[index];
+            final todaysReps = _todaysRepetitions[habit.id] ?? [];
+            final streak = _streaks[habit.id] ?? 0;
+            final goalProgress = _goalProgress[habit.id];
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Slidable(
+                key: ValueKey(habit.id),
+                endActionPane: ActionPane(
+                  motion: const ScrollMotion(),
+                  children: [
+                    SlidableAction(
+                      onPressed: (context) => _editHabit(habit),
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      icon: Icons.edit,
+                      label: AppLocalizations.of(context)!.edit,
+                      borderRadius: BorderRadius.horizontal(
+                        left: Radius.circular(12),
+                      ),
+                    ),
+                    SlidableAction(
+                      onPressed: (context) => _archiveHabit(habit),
+                      backgroundColor: Colors.indigo,
+                      foregroundColor: Colors.white,
+                      icon: Icons.archive,
+                      label: AppLocalizations.of(context)!.archive,
+                    ),
+                    SlidableAction(
+                      onPressed: (context) => _deleteHabit(habit),
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      icon: Icons.delete,
+                      label: AppLocalizations.of(context)!.delete,
+                      borderRadius: BorderRadius.horizontal(
+                        right: Radius.circular(12),
+                      ),
+                    ),
+                  ],
+                ),
+                child: HabitCard(
+                  habit: habit,
+                  onTap: () async {
+                    await Navigator.of(context).push(
+                      CustomPageRoute(page: HabitDetailScreen(habit: habit)),
+                    );
+                    _loadHabits();
+                  },
+                  onStateChanged: () => _loadHabits(),
+                  streak: streak,
+                  repetitionsToday: todaysReps,
+                  goalProgress: goalProgress,
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _loadHabits,
+      child: ReorderableListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
+        proxyDecorator: (child, index, animation) {
+          return AnimatedBuilder(
+            animation: animation,
+            builder: (BuildContext context, Widget? child) {
+              return Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 10,
+                      spreadRadius: -2,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: child,
+              );
+            },
+            child: child,
+          );
+        },
+        onReorder: _onReorder,
         children: habits.map((habit) {
           final todaysReps = _todaysRepetitions[habit.id] ?? [];
           final streak = _streaks[habit.id] ?? 0;
           final goalProgress = _goalProgress[habit.id];
 
-          return AnimationConfiguration.staggeredList(
-            position: habits.indexOf(habit),
-            duration: const Duration(milliseconds: 375),
-            child: SlideAnimation(
-              verticalOffset: 50.0,
-              child: FadeInAnimation(
-                child: Slidable(
-                  key: ValueKey(habit.id),
-                  endActionPane: ActionPane(
-                    motion: const ScrollMotion(),
-                    children: [
-                      SlidableAction(
-                        onPressed: (context) => _editHabit(habit),
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        icon: Icons.edit,
-                        label: AppLocalizations.of(context)!.edit,
-                        borderRadius: BorderRadius.horizontal(
-                          left: Radius.circular(12),
-                        ),
-                      ),
-                      SlidableAction(
-                        onPressed: (context) => _archiveHabit(habit),
-                        backgroundColor: Colors.indigo,
-                        foregroundColor: Colors.white,
-                        icon: Icons.archive,
-                        label: AppLocalizations.of(context)!.archive,
-                      ),
-                      SlidableAction(
-                        onPressed: (context) => _deleteHabit(habit),
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                        icon: Icons.delete,
-                        label: AppLocalizations.of(context)!.delete,
-                        borderRadius: BorderRadius.horizontal(
-                          right: Radius.circular(12),
-                        ),
-                      ),
-                    ],
+          return Container(
+            key: ValueKey(habit.id),
+            margin: const EdgeInsets.only(bottom: 8.0),
+            child: Slidable(
+              key: ValueKey(habit.id),
+              endActionPane: ActionPane(
+                motion: const ScrollMotion(),
+                children: [
+                  SlidableAction(
+                    onPressed: (context) => _editHabit(habit),
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    icon: Icons.edit,
+                    label: AppLocalizations.of(context)!.edit,
+                    borderRadius: BorderRadius.horizontal(
+                      left: Radius.circular(12),
+                    ),
                   ),
-                  child: HabitCard(
-                    habit: habit,
-                    onTap: () async {
-                      await Navigator.of(context).push(
-                        CustomPageRoute(page: HabitDetailScreen(habit: habit)),
-                      );
-                      _loadHabits();
-                    },
-                    onStateChanged: () => _loadHabits(),
-                    streak: streak,
-                    repetitionsToday: todaysReps,
-                    goalProgress: goalProgress,
+                  SlidableAction(
+                    onPressed: (context) => _archiveHabit(habit),
+                    backgroundColor: Colors.indigo,
+                    foregroundColor: Colors.white,
+                    icon: Icons.archive,
+                    label: AppLocalizations.of(context)!.archive,
                   ),
-                ),
+                  SlidableAction(
+                    onPressed: (context) => _deleteHabit(habit),
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    icon: Icons.delete,
+                    label: AppLocalizations.of(context)!.delete,
+                    borderRadius: BorderRadius.horizontal(
+                      right: Radius.circular(12),
+                    ),
+                  ),
+                ],
+              ),
+              child: HabitCard(
+                habit: habit,
+                onTap: () async {
+                  await Navigator.of(context).push(
+                    CustomPageRoute(page: HabitDetailScreen(habit: habit)),
+                  );
+                  _loadHabits();
+                },
+                onStateChanged: () => _loadHabits(),
+                streak: streak,
+                repetitionsToday: todaysReps,
+                goalProgress: goalProgress,
               ),
             ),
           );
@@ -315,7 +461,7 @@ class _HabitListScreenState extends State<HabitListScreen>
   Widget _buildChip(String category) {
     final isSelected = _selectedCategoryFilter == category;
     String label = category;
-    if (category == 'All') label = 'All'; // Should ideally use localized 'All'
+    if (category == 'All') label = AppLocalizations.of(context)!.all;
     if (category == 'Uncategorized')
       label = AppLocalizations.of(context)!.uncategorized;
 
@@ -421,129 +567,138 @@ class _HabitListScreenState extends State<HabitListScreen>
   }
 
   List<Habit> _getFilteredHabits() {
+    List<Habit> habits;
     if (_selectedCategoryFilter == 'All') {
-      // Combine all grouped items + uncategorized, avoiding duplicates
-      final seenIds = <int>{};
-      final all = <Habit>[];
-
-      for (final cat in _categoryOrder) {
-        if (_groupedHabits.containsKey(cat)) {
-          for (final habit in _groupedHabits[cat]!) {
-            if (habit.id != null && seenIds.add(habit.id!)) {
-              all.add(habit);
-            }
-          }
-        }
-      }
-      for (final habit in _uncategorizedHabits) {
-        if (habit.id != null && seenIds.add(habit.id!)) {
-          all.add(habit);
-        }
-      }
-      return all;
+      habits = _allHabits;
     } else if (_selectedCategoryFilter == 'Uncategorized') {
-      return _uncategorizedHabits;
+      habits = _uncategorizedHabits;
     } else {
-      return _groupedHabits[_selectedCategoryFilter] ?? [];
+      habits = _groupedHabits[_selectedCategoryFilter] ?? [];
     }
+
+    if (_searchQuery.isNotEmpty) {
+      habits = habits
+          .where(
+            (h) => h.name.toLowerCase().contains(_searchQuery.toLowerCase()),
+          )
+          .toList();
+    } else if (_currentSortType != HabitSortType.manual) {
+      // Create a copy to avoid mutating the original list when sorting
+      habits = List.of(habits);
+    }
+
+    switch (_currentSortType) {
+      case HabitSortType.name:
+        habits.sort(
+          (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+        );
+        break;
+      case HabitSortType.color:
+        habits.sort((a, b) => a.color.value.compareTo(b.color.value));
+        break;
+      case HabitSortType.createdNewest:
+        habits.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        break;
+      case HabitSortType.createdOldest:
+        habits.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+        break;
+      case HabitSortType.manual:
+      default:
+        break;
+    }
+
+    return habits;
   }
 
   @override
   Widget build(BuildContext context) {
+    // Listen for global updates (e.g. from BackupScreen)
+    final updateCount = context.watch<HabitUpdateProvider>().updateCount;
+    if (updateCount != _lastUpdateCount) {
+      _lastUpdateCount = updateCount;
+      // Use addPostFrameCallback to avoid setState during build
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _loadHabits();
+      });
+    }
+
     final filteredHabits = _getFilteredHabits();
     final hasHabits =
         _groupedHabits.isNotEmpty || _uncategorizedHabits.isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          AppLocalizations.of(context)!.myHabits,
-          style: Theme.of(
-            context,
-          ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
-        ),
+        title: _isSearching
+            ? TextField(
+                controller: _searchController,
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: 'Search habits...',
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.6),
+                  ),
+                ),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              )
+            : Text(
+                AppLocalizations.of(context)!.myHabits,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
         centerTitle: false,
         elevation: 0,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         actions: [
           IconButton(
-            icon: Icon(
-              Icons.analytics_rounded,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            onPressed: () async {
-              await Navigator.of(
-                context,
-              ).push(CustomPageRoute(page: const StatisticsScreen()));
-              _loadHabits();
+            icon: Icon(_isSearching ? Icons.close : Icons.search),
+            onPressed: () {
+              setState(() {
+                if (_isSearching) {
+                  _isSearching = false;
+                  _searchController.clear();
+                } else {
+                  _isSearching = true;
+                }
+              });
             },
           ),
-          PopupMenuButton<String>(
-            icon: Icon(Icons.more_vert_rounded),
-            itemBuilder: (BuildContext context) {
-              return [
-                PopupMenuItem<String>(
-                  value: 'settings',
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.settings,
-                        size: 20,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      SizedBox(width: 8),
-                      Text(AppLocalizations.of(context)!.settings),
-                    ],
-                  ),
-                ),
-                PopupMenuItem<String>(
-                  value: 'backup',
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.backup,
-                        size: 20,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      SizedBox(width: 8),
-                      Text(AppLocalizations.of(context)!.backupAndRestore),
-                    ],
-                  ),
-                ),
-                PopupMenuItem<String>(
-                  value: 'archived',
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.archive,
-                        size: 20,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      SizedBox(width: 8),
-                      Text(AppLocalizations.of(context)!.archivedHabits),
-                    ],
-                  ),
-                ),
-              ];
+          PopupMenuButton<HabitSortType>(
+            icon: const Icon(Icons.sort),
+            tooltip: AppLocalizations.of(context)!.sort,
+            onSelected: (HabitSortType result) {
+              setState(() {
+                _currentSortType = result;
+              });
             },
-            onSelected: (value) async {
-              if (value == 'settings') {
-                await Navigator.of(
-                  context,
-                ).push(CustomPageRoute(page: const SettingsScreen()));
-                _loadHabits();
-              } else if (value == 'backup') {
-                await Navigator.of(
-                  context,
-                ).push(CustomPageRoute(page: const BackupScreen()));
-                _loadHabits();
-              } else if (value == 'archived') {
-                await Navigator.of(
-                  context,
-                ).push(CustomPageRoute(page: const ArchivedHabitsScreen()));
-                _loadHabits();
-              }
-            },
+            itemBuilder: (BuildContext context) =>
+                <PopupMenuEntry<HabitSortType>>[
+                  PopupMenuItem<HabitSortType>(
+                    value: HabitSortType.manual,
+                    child: Text(AppLocalizations.of(context)!.sortDefault),
+                  ),
+                  PopupMenuItem<HabitSortType>(
+                    value: HabitSortType.name,
+                    child: Text(AppLocalizations.of(context)!.habitName),
+                  ),
+                  PopupMenuItem<HabitSortType>(
+                    value: HabitSortType.color,
+                    child: Text(AppLocalizations.of(context)!.color),
+                  ),
+                  PopupMenuItem<HabitSortType>(
+                    value: HabitSortType.createdNewest,
+                    child: Text(AppLocalizations.of(context)!.sortNewest),
+                  ),
+                  PopupMenuItem<HabitSortType>(
+                    value: HabitSortType.createdOldest,
+                    child: Text(AppLocalizations.of(context)!.sortOldest),
+                  ),
+                ],
           ),
         ],
       ),
@@ -553,26 +708,14 @@ class _HabitListScreenState extends State<HabitListScreen>
           ? EmptyState(message: AppLocalizations.of(context)!.addFirstHabit)
           : Column(
               children: [
-                _buildCategoryFilter(),
+                if (!_isSearching) _buildCategoryFilter(),
                 Expanded(
                   child: filteredHabits.isEmpty
-                      ? Center(child: Text("No habits in this category"))
+                      ? Center(child: Text("No habits found"))
                       : _buildHabitList(filteredHabits),
                 ),
               ],
             ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          final result = await Navigator.of(
-            context,
-          ).push(CustomPageRoute(page: const HabitFormScreen()));
-          if (result == true) {
-            _loadHabits();
-          }
-        },
-        icon: const Icon(Icons.add),
-        label: Text(AppLocalizations.of(context)!.createHabit),
-      ),
     );
   }
 }

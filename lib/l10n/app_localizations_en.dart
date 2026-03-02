@@ -184,7 +184,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get frequencyLast7Days => 'Frequency (Last 7 Days)';
 
   @override
-  String get habitStrengthLast30Days => 'Habit Strength (Last 30 Days)';
+  String get habitStrengthLast30Days =>
+      'Frequency of doing the habit (Last 30 Days)';
 
   @override
   String get cannotSkipCompleted => 'Cannot skip a completed day.';
@@ -349,19 +350,208 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get habitTypeHelpBody =>
-      '1. **Regular:** Simple Yes/No check (e.g., Wake up early)\n2. **Numeric:** Track a number (e.g., Drink 8 glasses)\n3. **Timed:** Track duration (e.g., Meditate 15 mins)';
+      '1. Regular: Simple Yes/No check (e.g., Wake up early)\n2. Numeric: Track a number (e.g., Drink 8 glasses)\n3. Timed: Track duration (e.g., Meditate 15 mins)';
 
   @override
   String get goalHelpTitle => 'Goal Periods';
 
   @override
   String get goalHelpBody =>
-      '1. **Daily:** Resets every day.\n2. **Weekly:** Resets every Monday.\n3. **Monthly:** Resets on the 1st of the month.\n4. **All Time:** Never resets (Accumulates forever).';
+      '1. Daily: Resets every day.\n2. Weekly: Resets every Monday.\n3. Monthly: Resets on the 1st of the month.\n4. All Time: Never resets (Accumulates forever).';
 
   @override
   String get frequencyHelpTitle => 'Frequency';
 
   @override
   String get frequencyHelpBody =>
-      '1. **Daily:** Everyday, Weekdays, or Weekends.\n2. **Weekly:** specific days (Mon-Sun).\n3. **Monthly:** Once a month (Select specific months).\n4. **Custom:** Repeat every X days (e.g. Every 2 days = Every other day).';
+      '1. Daily: Everyday, Weekdays, or Weekends.\n2. Weekly: specific days (Mon-Sun).\n3. Monthly: Once a month (Select specific months).\n4. Custom: Repeat every X days (e.g. Every 2 days = Every other day).';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get completeGoal => 'Complete Goal?';
+
+  @override
+  String completeGoalConfirmation(String count) {
+    return 'Mark remaining $count times as done to finish the goal?';
+  }
+
+  @override
+  String get chooseAction => 'Choose Action';
+
+  @override
+  String get markAsDone => 'Mark as Done';
+
+  @override
+  String get shareExportCSV => 'Loop Habit Tracker Export (CSV)';
+
+  @override
+  String get shareBackupSQLite => 'Loop Habit Tracker Backup (SQLite)';
+
+  @override
+  String get loopHabitTrackerBackup => 'Loop Habit Tracker Backup';
+
+  @override
+  String get reminders => 'Reminders';
+
+  @override
+  String get reminderTime => 'Reminder Time';
+
+  @override
+  String get exportData => 'Export Data';
+
+  @override
+  String get exportToCSV => 'Export to CSV';
+
+  @override
+  String get exportToSQLite => 'Export to SQLite';
+
+  @override
+  String get importData => 'Import Data';
+
+  @override
+  String get importFromCSV => 'Import from CSV';
+
+  @override
+  String get importFromSQLite => 'Import from SQLite';
+
+  @override
+  String get backupHistory => 'Backup History';
+
+  @override
+  String get noBackupFilesFound => 'No backup files found.';
+
+  @override
+  String get statisticsOverview => 'Statistics Overview';
+
+  @override
+  String get overallSummary => 'Overall Summary';
+
+  @override
+  String get totalHabits => 'Total Habits';
+
+  @override
+  String get noHabitsToRank => 'No habits to rank.';
+
+  @override
+  String get habitLeaderboard => 'Habit Leaderboard';
+
+  @override
+  String savedToDownloads(String path) {
+    return 'Saved to Downloads folder: $path';
+  }
+
+  @override
+  String get exportSuccessSharing => 'Exported successfully. Sharing...';
+
+  @override
+  String errorExportingCSV(String error) {
+    return 'Error exporting to CSV: $error';
+  }
+
+  @override
+  String errorExportingSQLite(String error) {
+    return 'Error exporting to SQLite: $error';
+  }
+
+  @override
+  String get importSuccess => 'Import successful.';
+
+  @override
+  String errorImportingCSV(String error) {
+    return 'Error importing from CSV: $error';
+  }
+
+  @override
+  String errorImportingSQLite(String error) {
+    return 'Error importing from SQLite: $error';
+  }
+
+  @override
+  String timeToCompleteHabit(String habitName) {
+    return 'It\'s time to complete $habitName';
+  }
+
+  @override
+  String get colorScheme => 'Color Scheme';
+
+  @override
+  String get selectColorScheme => 'Select Color Scheme';
+
+  @override
+  String get dailyRemindersSubtitle => 'Daily reminders at 8 AM & 8 PM';
+
+  @override
+  String get dailyRemindersEnabledMessage =>
+      'Daily reminders enabled for 8:00 AM & 8:00 PM';
+
+  @override
+  String get morningGreetingTitle => 'Good Morning! ☀️';
+
+  @override
+  String get morningGreetingBody =>
+      'Time to check your habits and start the day strong.';
+
+  @override
+  String get eveningGreetingTitle => 'Good Evening! 🌙';
+
+  @override
+  String get eveningGreetingBody =>
+      'Have you completed your habits for today? Don\'t break the streak!';
+
+  @override
+  String get statsExplanationTitle => 'Statistics Explained';
+
+  @override
+  String get statsExplanationBody =>
+      '1. Total Habits: The number of habits being tracked.\n2. Total Completions: The total number of days all habits have been completed.\n3. Habit Score: A score based on consistency and streaks.\n4. Leaderboard: Ranks your habits by their success score.';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get score => 'Score';
+
+  @override
+  String get streak => 'Streak';
+
+  @override
+  String get hours => 'Hours';
+
+  @override
+  String get minutes => 'Minutes';
+
+  @override
+  String get heatmap => 'Heatmap';
+
+  @override
+  String get heatmapTimeRange => 'Last 3 Months';
+
+  @override
+  String get heatmapLess => 'Less';
+
+  @override
+  String get heatmapMore => 'More';
+
+  @override
+  String get sort => 'Sort';
+
+  @override
+  String get sortDefault => 'Default';
+
+  @override
+  String get sortNewest => 'Newest';
+
+  @override
+  String get sortOldest => 'Oldest';
+
+  @override
+  String get addNote => 'Add Note';
+
+  @override
+  String get editNote => 'Edit Note';
+
+  @override
+  String get noteHint => 'Enter note here...';
 }

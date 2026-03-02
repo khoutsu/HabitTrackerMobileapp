@@ -5,21 +5,21 @@ class CalculateHabitScore {
   // Calculates the score based on Average Completion Rate (Process-based %)
   // This replaces the previous "Strength" score with a direct "Percentage of Goal Achieved" metric.
   double call(Habit habit, List<Repetition> repetitions, DateTime currentDate) {
-    if (habit.createdAt.isAfter(currentDate)) {
-      return 0.0; // Habit not yet started
-    }
+    // Remove strict time check to allow for "Same Day" calculation logic
+    // if (habit.createdAt.isAfter(currentDate)) return 0.0;
 
     // Group repetitions by date and sum values
     final Map<DateTime, double> dailyValues = {};
     for (var rep in repetitions) {
-      if (!rep.timestamp.isAfter(currentDate)) {
-        final date = DateTime(
-          rep.timestamp.year,
-          rep.timestamp.month,
-          rep.timestamp.day,
-        );
-        dailyValues[date] = (dailyValues[date] ?? 0.0) + (rep.value ?? 0.0);
-      }
+      // Remove strict filtering to ensure all relevant reps are counted
+      // if (!rep.timestamp.isAfter(currentDate)) {
+      final date = DateTime(
+        rep.timestamp.year,
+        rep.timestamp.month,
+        rep.timestamp.day,
+      );
+      dailyValues[date] = (dailyValues[date] ?? 0.0) + (rep.value ?? 0.0);
+      // }
     }
 
     DateTime day = DateTime(
@@ -94,8 +94,6 @@ class CalculateHabitScore {
           dailyRatio = (currentTotal / habit.goalValue!).clamp(0.0, 1.0);
         } else {
           // Binary completion for non-numeric or no-goal (using Daily activity)
-          // For consistency, non-numeric usually implies Daily frequency?
-          // If Weekly frequency, we stick to "Did you do it today?".
           dailyRatio = (dailyValues[day] ?? 0.0) > 0 ? 1.0 : 0.0;
         }
         totalProgress += dailyRatio;

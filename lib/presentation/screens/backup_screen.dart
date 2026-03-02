@@ -1,11 +1,11 @@
-import 'dart:io';
+import 'package:loop_habit_tracker/l10n/app_localizations.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:loop_habit_tracker/core/services/export_service.dart';
 import 'package:loop_habit_tracker/core/services/import_service.dart';
-import 'package:path_provider/path_provider.dart';
-
-import 'package:loop_habit_tracker/core/themes/app_colors.dart';
+import 'package:provider/provider.dart';
+import 'package:loop_habit_tracker/presentation/providers/habit_update_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class BackupScreen extends StatefulWidget {
   const BackupScreen({super.key});
@@ -17,36 +17,6 @@ class BackupScreen extends StatefulWidget {
 class _BackupScreenState extends State<BackupScreen> {
   final ExportService _exportService = ExportService();
   final ImportService _importService = ImportService();
-  List<File> _backupFiles = [];
-  bool _isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadBackupFiles();
-  }
-
-  Future<void> _loadBackupFiles() async {
-    setState(() {
-      _isLoading = true;
-    });
-    final directory = await getApplicationDocumentsDirectory();
-    final files = directory
-        .listSync()
-        .where(
-          (item) => item.path.endsWith('.csv') || item.path.endsWith('.db'),
-        )
-        .map((item) => File(item.path))
-        .toList();
-
-    // Sort files by modification date
-    files.sort((a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()));
-
-    setState(() {
-      _backupFiles = files;
-      _isLoading = false;
-    });
-  }
 
   void _showSnackbar(String message, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -60,20 +30,43 @@ class _BackupScreenState extends State<BackupScreen> {
   Future<void> _exportToCSV() async {
     try {
       final path = await _exportService.exportToCSV();
-      _showSnackbar('Exported to CSV successfully at $path');
-      _loadBackupFiles();
+      if (path.contains('Download')) {
+        _showSnackbar(
+          AppLocalizations.of(context)!.savedToDownloads(path.split('/').last),
+        );
+      } else {
+        _showSnackbar(AppLocalizations.of(context)!.exportSuccessSharing);
+      }
+      // Share regardless, as it's convenient
+      await Share.shareXFiles([
+        XFile(path),
+      ], text: AppLocalizations.of(context)!.shareExportCSV);
     } catch (e) {
-      _showSnackbar('Error exporting to CSV: $e', isError: true);
+      _showSnackbar(
+        AppLocalizations.of(context)!.errorExportingCSV(e.toString()),
+        isError: true,
+      );
     }
   }
 
   Future<void> _exportToSQLite() async {
     try {
       final path = await _exportService.exportToSQLite();
-      _showSnackbar('Exported to SQLite successfully at $path');
-      _loadBackupFiles();
+      if (path.contains('Download')) {
+        _showSnackbar(
+          AppLocalizations.of(context)!.savedToDownloads(path.split('/').last),
+        );
+      } else {
+        _showSnackbar(AppLocalizations.of(context)!.exportSuccessSharing);
+      }
+      await Share.shareXFiles([
+        XFile(path),
+      ], text: AppLocalizations.of(context)!.shareBackupSQLite);
     } catch (e) {
-      _showSnackbar('Error exporting to SQLite: $e', isError: true);
+      _showSnackbar(
+        AppLocalizations.of(context)!.errorExportingSQLite(e.toString()),
+        isError: true,
+      );
     }
   }
 
@@ -87,13 +80,20 @@ class _BackupScreenState extends State<BackupScreen> {
       final filePath = result.files.single.path;
       if (filePath != null) {
         try {
-          await _importService.importFromCSV(
+          final message = await _importService.importFromCSV(
             filePath,
             strategy: ImportStrategy.replace,
           );
-          _showSnackbar('Import from CSV successful.');
+          _showSnackbar(message);
+          // Trigger global update
+          if (mounted) {
+            context.read<HabitUpdateProvider>().notifyUpdated();
+          }
         } catch (e) {
-          _showSnackbar('Error importing from CSV: $e', isError: true);
+          _showSnackbar(
+            AppLocalizations.of(context)!.errorImportingCSV(e.toString()),
+            isError: true,
+          );
         }
       }
     } else {
@@ -111,9 +111,16 @@ class _BackupScreenState extends State<BackupScreen> {
       if (filePath != null) {
         try {
           await _importService.importFromSQLite(filePath);
-          _showSnackbar('Import from SQLite successful.');
+          _showSnackbar(AppLocalizations.of(context)!.importSuccess);
+          // Trigger global update
+          if (mounted) {
+            context.read<HabitUpdateProvider>().notifyUpdated();
+          }
         } catch (e) {
-          _showSnackbar('Error importing from SQLite: $e', isError: true);
+          _showSnackbar(
+            AppLocalizations.of(context)!.errorImportingSQLite(e.toString()),
+            isError: true,
+          );
         }
       }
     } else {
@@ -124,72 +131,47 @@ class _BackupScreenState extends State<BackupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Backup & Restore')),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.backupAndRestore),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('Export Data', style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: _exportToCSV,
-              child: const Text('Export to CSV'),
-            ),
-            ElevatedButton(
-              onPressed: _exportToSQLite,
-              child: const Text('Export to SQLite'),
-            ),
-            const SizedBox(height: 24),
-            Text('Import Data', style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: _importFromCSV,
-              child: const Text('Import from CSV'),
-            ),
-            ElevatedButton(
-              onPressed: _importFromSQLite,
-              child: const Text('Import from SQLite'),
-            ),
-            const SizedBox(height: 24),
             Text(
-              'Backup History',
+              AppLocalizations.of(context)!.exportData,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
-            _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _backupFiles.isEmpty
-                ? const Center(child: Text('No backup files found.'))
-                : ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: _backupFiles.length,
-                    itemBuilder: (context, index) {
-                      final file = _backupFiles[index];
-                      final fileName = file.path.split('/').last;
-                      final modifiedDate = file.lastModifiedSync();
-                      return Card(
-                        child: ListTile(
-                          leading: Icon(
-                            fileName.endsWith('.csv')
-                                ? Icons.description
-                                : Icons.storage,
-                            color: AppColors.accent,
-                          ),
-                          title: Text(fileName),
-                          subtitle: Text(modifiedDate.toLocal().toString()),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () async {
-                              await file.delete();
-                              _loadBackupFiles();
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+            ElevatedButton.icon(
+              onPressed: _exportToCSV,
+              icon: const Icon(Icons.file_download),
+              label: Text(AppLocalizations.of(context)!.exportToCSV),
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton.icon(
+              onPressed: _exportToSQLite,
+              icon: const Icon(Icons.dataset),
+              label: Text(AppLocalizations.of(context)!.exportToSQLite),
+            ),
+            const SizedBox(height: 32),
+            Text(
+              AppLocalizations.of(context)!.importData,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: _importFromCSV,
+              icon: const Icon(Icons.file_upload),
+              label: Text(AppLocalizations.of(context)!.importFromCSV),
+            ),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: _importFromSQLite,
+              icon: const Icon(Icons.settings_backup_restore),
+              label: Text(AppLocalizations.of(context)!.importFromSQLite),
+            ),
           ],
         ),
       ),

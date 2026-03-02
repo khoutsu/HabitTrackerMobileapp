@@ -6,9 +6,11 @@ import 'package:loop_habit_tracker/data/models/habit_model.dart';
 import 'package:loop_habit_tracker/data/repositories/habit_repository.dart';
 import 'package:loop_habit_tracker/l10n/app_localizations.dart';
 import 'package:loop_habit_tracker/data/models/frequency_model.dart'; // Import Frequency model
+
 import 'package:loop_habit_tracker/data/models/category_model.dart';
 import 'package:loop_habit_tracker/data/repositories/category_repository.dart';
 import 'package:loop_habit_tracker/presentation/widgets/frequency_selector.dart'; // Import FrequencySelector
+
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class HabitFormScreen extends StatefulWidget {
@@ -79,7 +81,6 @@ class _HabitFormScreenState extends State<HabitFormScreen> {
           _minutesController.text = (savedDuration % 60).toString();
         }
       }
-      _selectedGoalPeriod = widget.habit!.goalPeriod;
     }
   }
 
@@ -126,124 +127,6 @@ class _HabitFormScreenState extends State<HabitFormScreen> {
     );
   }
 
-  Future<Category?> _showAddCategoryDialog() async {
-    final newCategoryController = TextEditingController();
-    final result = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Padding(
-          padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
-          child: Text(
-            AppLocalizations.of(context)!.addNewCategory,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: newCategoryController,
-              autofocus: true,
-              style: Theme.of(context).textTheme.bodyLarge,
-              cursorColor: AppColors.primary,
-              decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.categoryName,
-                hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-                filled: true,
-                fillColor: AppColors.background,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                    color: AppColors.primary,
-                    width: 2,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        actionsPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-        actions: [
-          Row(
-            children: [
-              Expanded(
-                child: TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Text(
-                    AppLocalizations.of(context)!.cancel,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (newCategoryController.text.isNotEmpty) {
-                      Navigator.of(context).pop(newCategoryController.text);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    AppLocalizations.of(context)!.add,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-
-    if (result != null && result.isNotEmpty) {
-      final newCategory = await _categoryRepository.createCategory(
-        Category(name: result),
-      );
-      // Reload main categories
-      await _loadCategories();
-      // Add to selected
-      setState(() {
-        _selectedCategoryIds.add(newCategory.id!);
-      });
-      return newCategory;
-    }
-    return null;
-  }
-
   Future<void> _showManageCategoriesDialog() async {
     // Helper function to create new category within the dialog
     Future<void> createNewCategoryInDialog(StateSetter setStateDialog) async {
@@ -279,7 +162,9 @@ class _HabitFormScreenState extends State<HabitFormScreen> {
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   filled: true,
-                  fillColor: AppColors.background,
+                  fillColor: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.surfaceDark
+                      : AppColors.background,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 14,
@@ -371,7 +256,7 @@ class _HabitFormScreenState extends State<HabitFormScreen> {
       }
     }
 
-    Future<void> _editCategoryInDialog(
+    Future<void> editCategoryInDialog(
       Category category,
       StateSetter setStateDialog,
     ) async {
@@ -408,7 +293,9 @@ class _HabitFormScreenState extends State<HabitFormScreen> {
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   filled: true,
-                  fillColor: AppColors.background,
+                  fillColor: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.surfaceDark
+                      : AppColors.background,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 14,
@@ -499,7 +386,7 @@ class _HabitFormScreenState extends State<HabitFormScreen> {
       }
     }
 
-    Future<void> _deleteCategoryInDialog(
+    Future<void> deleteCategoryInDialog(
       Category category,
       StateSetter setStateDialog,
     ) async {
@@ -569,7 +456,7 @@ class _HabitFormScreenState extends State<HabitFormScreen> {
                                       SlidableAction(
                                         onPressed: (context) {
                                           // Edit logic
-                                          _editCategoryInDialog(
+                                          editCategoryInDialog(
                                             category,
                                             setStateDialog,
                                           );
@@ -587,7 +474,7 @@ class _HabitFormScreenState extends State<HabitFormScreen> {
                                       SlidableAction(
                                         onPressed: (context) {
                                           // Delete logic
-                                          _deleteCategoryInDialog(
+                                          deleteCategoryInDialog(
                                             category,
                                             setStateDialog,
                                           );
@@ -683,8 +570,7 @@ class _HabitFormScreenState extends State<HabitFormScreen> {
                       });
                     },
                   );
-                })
-                .toList(),
+                }),
             ActionChip(
               avatar: Icon(Icons.edit),
               label: Text(AppLocalizations.of(context)!.add),
@@ -723,11 +609,12 @@ class _HabitFormScreenState extends State<HabitFormScreen> {
         goalPeriod: _selectedGoalPeriod,
       );
 
-      if (widget.habit == null) {
-        await habitRepository.createHabit(newHabit);
-      } else {
+      if (widget.habit != null) {
         await habitRepository.updateHabit(newHabit);
+      } else {
+        await habitRepository.createHabit(newHabit);
       }
+
       if (mounted) {
         Navigator.of(context).pop(true);
       }
@@ -886,7 +773,7 @@ class _HabitFormScreenState extends State<HabitFormScreen> {
                       Expanded(
                         child: TextFormField(
                           decoration: InputDecoration(
-                            labelText: 'Hours', // Localization later
+                            labelText: l10n.hours,
                             border: const OutlineInputBorder(),
                           ),
                           keyboardType: TextInputType.number,
@@ -899,7 +786,7 @@ class _HabitFormScreenState extends State<HabitFormScreen> {
                         child: TextFormField(
                           key: const Key('minutesTextField'),
                           decoration: InputDecoration(
-                            labelText: 'Minutes', // Localization later
+                            labelText: l10n.minutes,
                             border: const OutlineInputBorder(),
                           ),
                           keyboardType: TextInputType.number,
@@ -1017,6 +904,9 @@ class _HabitFormScreenState extends State<HabitFormScreen> {
                   ),
                 ),
               ),
+
+              const SizedBox(height: 16),
+
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: _saveHabit,

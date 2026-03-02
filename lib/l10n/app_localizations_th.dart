@@ -33,7 +33,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get statistics => 'สถิติ';
 
   @override
-  String get archivedHabits => 'กิจวัตรที่เก็บถาวร';
+  String get archivedHabits => 'คลังกิจวัตร';
 
   @override
   String get habitName => 'ชื่อกิจวัตร';
@@ -184,8 +184,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get frequencyLast7Days => 'ความถี่ (7 วันล่าสุด)';
 
   @override
-  String get habitStrengthLast30Days =>
-      'ความแข็งแกร่งของกิจวัตร (30 วันล่าสุด)';
+  String get habitStrengthLast30Days => 'ความถี่ในการทำกิจวัตร (30 วันล่าสุด)';
 
   @override
   String get cannotSkipCompleted => 'ไม่สามารถข้ามวันที่ทำสำเร็จแล้ว';
@@ -226,7 +225,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get edit => 'แก้ไข';
 
   @override
-  String get archive => 'เก็บถาวร';
+  String get archive => 'เก็บเข้าคลัง';
 
   @override
   String get restoreHabit => 'กู้คืนกิจวัตร';
@@ -297,7 +296,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get addFirstHabit => 'แตะปุ่ม + เพื่อเพิ่มกิจวัตรแรกของคุณ';
 
   @override
-  String get noArchivedHabits => 'คุณไม่มีกิจวัตรที่เก็บถาวร';
+  String get noArchivedHabits => 'คุณไม่มีกิจวัตรที่เก็บเข้าคลัง';
 
   @override
   String get uncategorized => 'ไม่มีหมวดหมู่';
@@ -365,4 +364,193 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get frequencyHelpBody =>
       '1. รายวัน: เลือกทำทุกวัน หรือ วันธรรมดา/เสาร์อาทิตย์\n2. รายสัปดาห์: เลือกวันเองระบุวัน (จันทร์ - อาทิตย์)\n3. รายเดือน: ทำเดือนละ 1 ครั้ง (ระบุเดือนที่จะทำได้)\n4. กำหนดเอง: ทำซ้ำทุกๆ X วัน (เช่น ทุก 2 วัน คือทำวันเว้นวัน)';
+
+  @override
+  String get all => 'ทั้งหมด';
+
+  @override
+  String get completeGoal => 'ทำเป้าหมายให้สำเร็จทันที?';
+
+  @override
+  String completeGoalConfirmation(String count) {
+    return 'ต้องการบันทึกว่าทำอีก $count ครั้ง เพื่อให้ครบเป้าหมายเลยหรือไม่?';
+  }
+
+  @override
+  String get chooseAction => 'เลือกการกระทำ';
+
+  @override
+  String get markAsDone => 'ทำเครื่องหมายว่าเสร็จ';
+
+  @override
+  String get shareExportCSV => 'ส่งออกข้อมูล Loop Habit Tracker (CSV)';
+
+  @override
+  String get shareBackupSQLite => 'สำรองข้อมูล Loop Habit Tracker (SQLite)';
+
+  @override
+  String get loopHabitTrackerBackup => 'การสำรองข้อมูล Loop Habit Tracker';
+
+  @override
+  String get reminders => 'การแจ้งเตือน';
+
+  @override
+  String get reminderTime => 'เวลาแจ้งเตือน';
+
+  @override
+  String get exportData => 'ส่งออกข้อมูล';
+
+  @override
+  String get exportToCSV => 'ส่งออกเป็น CSV';
+
+  @override
+  String get exportToSQLite => 'ส่งออกเป็น SQLite';
+
+  @override
+  String get importData => 'นำเข้าข้อมูล';
+
+  @override
+  String get importFromCSV => 'นำเข้าจาก CSV';
+
+  @override
+  String get importFromSQLite => 'นำเข้าจาก SQLite';
+
+  @override
+  String get backupHistory => 'ประวัติการสำรองข้อมูล';
+
+  @override
+  String get noBackupFilesFound => 'ไม่พบไฟล์สำรองข้อมูล';
+
+  @override
+  String get statisticsOverview => 'ภาพรวมสถิติ';
+
+  @override
+  String get overallSummary => 'สรุปผลรวม';
+
+  @override
+  String get totalHabits => 'กิจวัตรทั้งหมด';
+
+  @override
+  String get noHabitsToRank => 'ไม่มีข้อมูลกิจวัตรสำหรับจัดอันดับ';
+
+  @override
+  String get habitLeaderboard => 'อันดับทำสูงสุด';
+
+  @override
+  String savedToDownloads(String path) {
+    return 'บันทึกไปยังโฟลเดอร์ดาวน์โหลด: $path';
+  }
+
+  @override
+  String get exportSuccessSharing => 'ส่งออกสำเร็จ กำลังแชร์...';
+
+  @override
+  String errorExportingCSV(String error) {
+    return 'เกิดข้อผิดพลาดในการส่งออก CSV: $error';
+  }
+
+  @override
+  String errorExportingSQLite(String error) {
+    return 'เกิดข้อผิดพลาดในการส่งออก SQLite: $error';
+  }
+
+  @override
+  String get importSuccess => 'นำเข้าข้อมูลสำเร็จ';
+
+  @override
+  String errorImportingCSV(String error) {
+    return 'เกิดข้อผิดพลาดในการนำเข้าจาก CSV: $error';
+  }
+
+  @override
+  String errorImportingSQLite(String error) {
+    return 'เกิดข้อผิดพลาดในการนำเข้าจาก SQLite: $error';
+  }
+
+  @override
+  String timeToCompleteHabit(String habitName) {
+    return 'ได้เวลาทำนิสัย $habitName แล้ว';
+  }
+
+  @override
+  String get colorScheme => 'ชุดสี';
+
+  @override
+  String get selectColorScheme => 'เลือกชุดสี';
+
+  @override
+  String get dailyRemindersSubtitle => 'แจ้งเตือนรายวันเวลา 8:00 และ 20:00 น.';
+
+  @override
+  String get dailyRemindersEnabledMessage =>
+      'เปิดการแจ้งเตือนรายวันแล้ว (08:00 และ 20:00 น.)';
+
+  @override
+  String get morningGreetingTitle => 'สวัสดีตอนเช้า! ☀️';
+
+  @override
+  String get morningGreetingBody =>
+      'ได้เวลาตรวจสอบกิจวัตร และเริ่มต้นวันใหม่อย่างสดใส';
+
+  @override
+  String get eveningGreetingTitle => 'สวัสดีตอนค่ำ! 🌙';
+
+  @override
+  String get eveningGreetingBody =>
+      'ทำกิจวัตรของวันนี้ครบหรือยัง? รักษาสถิติต่อไปนะ!';
+
+  @override
+  String get statsExplanationTitle => 'คำอธิบายสถิติ';
+
+  @override
+  String get statsExplanationBody =>
+      'หน้านี้แสดงภาพรวมความก้าวหน้าของคุณ โดยเริ่มจากจำนวนกิจวัตรทั้งหมดที่คุณกำลังฝึกฝน และยอดรวมครั้งที่ทำสำเร็จทั้งหมด (Total Completions) ส่วนคะแนนความสำเร็จนั้นคำนวณเป็นเปอร์เซ็นต์จากความสม่ำเสมอของคุณ (วันที่ทำได้จริงหารด้วยวันที่ต้องทำทั้งหมด) และเราได้จัดอันดับ (Leaderboard) เพื่อให้คุณเห็นว่ากิจวัตรไหนที่คุณทำได้ดีที่สุด';
+
+  @override
+  String get close => 'ปิด';
+
+  @override
+  String get score => 'คะแนน';
+
+  @override
+  String get streak => 'ทำต่อเนื่อง';
+
+  @override
+  String get hours => 'ชั่วโมง';
+
+  @override
+  String get minutes => 'นาที';
+
+  @override
+  String get heatmap => 'ตารางความถี่';
+
+  @override
+  String get heatmapTimeRange => '3 เดือนล่าสุด';
+
+  @override
+  String get heatmapLess => 'น้อย';
+
+  @override
+  String get heatmapMore => 'มาก';
+
+  @override
+  String get sort => 'เรียงลำดับ';
+
+  @override
+  String get sortDefault => 'ค่าเริ่มต้น';
+
+  @override
+  String get sortNewest => 'ใหม่ล่าสุด';
+
+  @override
+  String get sortOldest => 'เก่าที่สุด';
+
+  @override
+  String get addNote => 'เพิ่มโน้ต';
+
+  @override
+  String get editNote => 'แก้ไขโน้ต';
+
+  @override
+  String get noteHint => 'ใส่ข้อความ...';
 }

@@ -1,3 +1,4 @@
+import 'package:loop_habit_tracker/data/models/reminder_model.dart';
 import 'package:loop_habit_tracker/data/models/skip_model.dart';
 import 'package:loop_habit_tracker/data/models/category_model.dart';
 import 'package:path/path.dart';
@@ -11,16 +12,24 @@ class DatabaseHelper {
   static Database? _database;
 
   Future<Database> get database async {
-    if (_database != null) return _database!;
+    if (_database != null && _database!.isOpen) return _database!;
     _database = await _initDB();
     return _database!;
+  }
+
+  Future<void> close() async {
+    final db = _database;
+    if (db != null && db.isOpen) {
+      await db.close();
+    }
+    _database = null;
   }
 
   Future<Database> _initDB() async {
     String path = join(await getDatabasesPath(), 'habit_tracker.db');
     return await openDatabase(
       path,
-      version: 4,
+      version: 6,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -55,11 +64,25 @@ class DatabaseHelper {
       ''');
     }
     if (oldVersion < 4) {
-      await db.execute("ALTER TABLE habits ADD COLUMN habit_type TEXT NOT NULL DEFAULT 'HabitType.yesNo'");
+      await db.execute(
+        "ALTER TABLE habits ADD COLUMN habit_type TEXT NOT NULL DEFAULT 'HabitType.yesNo'",
+      );
       await db.execute("ALTER TABLE habits ADD COLUMN numeric_unit TEXT");
-      await db.execute("ALTER TABLE habits ADD COLUMN goal_type TEXT NOT NULL DEFAULT 'GoalType.off'");
+      await db.execute(
+        "ALTER TABLE habits ADD COLUMN goal_type TEXT NOT NULL DEFAULT 'GoalType.off'",
+      );
       await db.execute("ALTER TABLE habits ADD COLUMN goal_value INTEGER");
-      await db.execute("ALTER TABLE habits ADD COLUMN goal_period TEXT NOT NULL DEFAULT 'GoalPeriod.allTime'");
+      await db.execute(
+        "ALTER TABLE habits ADD COLUMN goal_period TEXT NOT NULL DEFAULT 'GoalPeriod.allTime'",
+      );
+    }
+    if (oldVersion < 5) {
+      await db.execute(
+        "ALTER TABLE habits ADD COLUMN sort_order INTEGER NOT NULL DEFAULT 0",
+      );
+    }
+    if (oldVersion < 6) {
+      await db.execute("ALTER TABLE repetitions ADD COLUMN note TEXT");
     }
   }
 
@@ -77,7 +100,8 @@ class DatabaseHelper {
         numeric_unit TEXT,
         goal_type TEXT NOT NULL DEFAULT 'GoalType.off',
         goal_value INTEGER,
-        goal_period TEXT NOT NULL DEFAULT 'GoalPeriod.allTime'
+        goal_period TEXT NOT NULL DEFAULT 'GoalPeriod.allTime',
+        sort_order INTEGER NOT NULL DEFAULT 0
       )
     ''');
 
@@ -87,6 +111,7 @@ class DatabaseHelper {
         habit_id INTEGER NOT NULL,
         timestamp TEXT NOT NULL,
         value REAL,
+        note TEXT,
         FOREIGN KEY (habit_id) REFERENCES habits (id) ON DELETE CASCADE
       )
     ''');
@@ -226,5 +251,47 @@ class DatabaseHelper {
     return List.generate(maps.length, (i) {
       return Category.fromMap(maps[i]);
     });
+  }
+
+  // Reminder Methods
+  Future<List<Reminder>> getReminders(int habitId) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'reminders',
+      where: 'habit_id = ?',
+      whereArgs: [habitId],
+    );
+    return List.generate(maps.length, (i) {
+      return Reminder.fromMap(maps[i]);
+    });
+  }
+
+  Future<int> insertReminder(Reminder reminder) async {
+    final db = await database;
+    return await db.insert('reminders', reminder.toMap());
+  }
+
+  Future<int> updateReminder(Reminder reminder) async {
+    final db = await database;
+    return await db.update(
+      'reminders',
+      reminder.toMap(),
+      where: 'id = ?',
+      whereArgs: [reminder.id],
+    );
+  }
+
+  Future<int> deleteReminder(int id) async {
+    final db = await database;
+    return await db.delete('reminders', where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<int> deleteRemindersForHabit(int habitId) async {
+    final db = await database;
+    return await db.delete(
+      'reminders',
+      where: 'habit_id = ?',
+      whereArgs: [habitId],
+    );
   }
 }

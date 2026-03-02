@@ -179,6 +179,108 @@ class HabitCard extends StatelessWidget {
     }
   }
 
+  Future<void> _showNoteDialog(
+    BuildContext context,
+    Repetition? existingRepetition,
+  ) async {
+    final noteController = TextEditingController(
+      text: existingRepetition?.note ?? '',
+    );
+    final repetitionRepository = RepetitionRepository();
+
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        final theme = Theme.of(context);
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          title: Text(
+            existingRepetition != null
+                ? AppLocalizations.of(context)!.editNote
+                : AppLocalizations.of(context)!.addNote,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: Container(
+            width: double.maxFinite,
+            child: TextField(
+              controller: noteController,
+              autofocus: true,
+              style: theme.textTheme.bodyLarge,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context)!.noteHint,
+                filled: true,
+                fillColor: theme.colorScheme.onSurface.withOpacity(0.05),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(color: habit.color, width: 2),
+                ),
+                contentPadding: const EdgeInsets.all(16),
+              ),
+              minLines: 3,
+              maxLines: 5,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                AppLocalizations.of(context)!.cancel,
+                style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+              ),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.of(context).pop(noteController.text);
+              },
+              style: FilledButton.styleFrom(
+                backgroundColor: habit.color,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(AppLocalizations.of(context)!.save),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result != null) {
+      if (existingRepetition != null) {
+        await repetitionRepository.createRepetition(
+          Repetition(
+            id: existingRepetition.id,
+            habitId: existingRepetition.habitId,
+            timestamp: existingRepetition.timestamp,
+            value: existingRepetition.value,
+            note: result,
+          ),
+        );
+      } else {
+        double? value;
+        if (habit.habitType == HabitType.yesNo) {
+          value = 1.0;
+        }
+        await repetitionRepository.createRepetition(
+          Repetition(
+            habitId: habit.id!,
+            timestamp: DateTime.now(),
+            value: value,
+            note: result,
+          ),
+        );
+      }
+      onStateChanged();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -214,7 +316,18 @@ class HabitCard extends StatelessWidget {
     }
 
     // Logic to calculate frequency string (restored)
+    String? latestNote;
+    if (repetitionsToday.isNotEmpty) {
+      final repsWithNote = repetitionsToday.where(
+        (r) => r.note != null && r.note!.isNotEmpty,
+      );
+      if (repsWithNote.isNotEmpty) {
+        latestNote = repsWithNote.last.note;
+      }
+    }
+
     final l10n = AppLocalizations.of(context)!;
+
     final frequency = habit.frequency;
     String frequencyText = '';
 
@@ -314,7 +427,7 @@ class HabitCard extends StatelessWidget {
               Container(width: 6, color: color),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(12.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -329,7 +442,7 @@ class HabitCard extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
                       // Frequency Text (Sub-header)
                       if (frequencyText.isNotEmpty)
                         Text(
@@ -338,7 +451,7 @@ class HabitCard extends StatelessWidget {
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
 
                       // Stats Row
                       Wrap(
@@ -399,12 +512,56 @@ class HabitCard extends StatelessWidget {
                                 ),
                               ),
                             ),
+                          if (latestNote != null)
+                            Tooltip(
+                              message: latestNote,
+                              triggerMode: TooltipTriggerMode.tap,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: color.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: color.withOpacity(0.3),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.sticky_note_2,
+                                      size: 14,
+                                      color: color,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        maxWidth: 100,
+                                      ),
+                                      child: Text(
+                                        latestNote,
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              color: color,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                         ],
                       ),
 
                       // Goal Progress Bar
                       if (goalProgress != null) ...[
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 6),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -426,7 +583,7 @@ class HabitCard extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 4),
+                            const SizedBox(height: 2),
                             LinearProgressIndicator(
                               value:
                                   (goalProgress!['current']! /
@@ -434,7 +591,7 @@ class HabitCard extends StatelessWidget {
                                       .clamp(0.0, 1.0),
                               backgroundColor: theme.colorScheme.surfaceVariant,
                               valueColor: AlwaysStoppedAnimation<Color>(color),
-                              minHeight: 4,
+                              minHeight: 3,
                               borderRadius: BorderRadius.circular(2),
                             ),
                           ],
@@ -450,8 +607,81 @@ class HabitCard extends StatelessWidget {
                   HapticFeedback.lightImpact();
                   _handleCompletion(context);
                 },
+                onLongPress: () async {
+                  Repetition? existingRepetition;
+                  if (repetitionsToday.isNotEmpty) {
+                    existingRepetition = repetitionsToday.last;
+                  }
+
+                  bool handled = false;
+
+                  // Allow bulk completion for Yes/No habits with goals
+                  if (habit.habitType == HabitType.yesNo &&
+                      habit.goalType == GoalType.targetCount &&
+                      habit.goalValue != null &&
+                      habit.goalValue! > 0) {
+                    final l10n = AppLocalizations.of(context)!;
+                    double currentTotal = 0.0;
+                    if (goalProgress != null) {
+                      currentTotal = goalProgress!['current']!.toDouble();
+                    } else {
+                      currentTotal = repetitionsToday.fold(
+                        0.0,
+                        (sum, rep) => sum + (rep.value ?? 0),
+                      );
+                    }
+
+                    final double goal = habit.goalValue!.toDouble();
+                    final double remaining = goal - currentTotal;
+
+                    if (remaining > 0) {
+                      handled = true;
+                      HapticFeedback.heavyImpact();
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text(l10n.completeGoal),
+                          content: Text(
+                            l10n.completeGoalConfirmation(
+                              remaining.toInt().toString(),
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(false),
+                              child: Text(l10n.cancel),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(true),
+                              child: Text(
+                                l10n.success,
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (confirm == true) {
+                        final repository = RepetitionRepository();
+                        await repository.createRepetition(
+                          Repetition(
+                            habitId: habit.id!,
+                            timestamp: DateTime.now(),
+                            value: remaining,
+                          ),
+                        );
+                        onStateChanged();
+                      }
+                    }
+                  }
+
+                  if (!handled) {
+                    await _showNoteDialog(context, existingRepetition);
+                  }
+                },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
                   alignment: Alignment.center,
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
@@ -595,17 +825,42 @@ class _TimerDialogState extends State<_TimerDialog> {
         children: [
           GestureDetector(
             onTap: _isRunning ? null : _editTime,
-            child: Text(
-              _formatTime(_seconds),
-              style: theme.textTheme.displayMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                fontFeatures: [const FontFeature.tabularFigures()],
-                color: _isCountdown && _seconds == 0
-                    ? Colors.green
-                    : (_isRunning ? null : theme.colorScheme.primary),
-                decoration: _isRunning ? null : TextDecoration.underline,
-                decorationStyle: TextDecorationStyle.dashed,
-              ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                SizedBox(
+                  width: 200,
+                  height: 200,
+                  child: CircularProgressIndicator(
+                    value: _isCountdown && _currentGoalSeconds > 0
+                        ? (_seconds / _currentGoalSeconds)
+                        : 1.0,
+                    strokeWidth: 12,
+                    strokeCap: StrokeCap.round,
+                    backgroundColor: theme.colorScheme.surfaceVariant
+                        .withOpacity(0.3),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      _isCountdown && _seconds == 0
+                          ? Colors.green
+                          : theme.colorScheme.primary,
+                    ),
+                  ),
+                ),
+                Text(
+                  _formatTime(_seconds),
+                  style: theme.textTheme.headlineLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontFeatures: [const FontFeature.tabularFigures()],
+                    color: _isCountdown && _seconds == 0
+                        ? Colors.green
+                        : (_isRunning
+                              ? theme.colorScheme.onSurface
+                              : theme.colorScheme.primary),
+                    decoration: _isRunning ? null : TextDecoration.underline,
+                    decorationStyle: TextDecorationStyle.dashed,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 24),

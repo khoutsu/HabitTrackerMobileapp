@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:loop_habit_tracker/data/models/habit_model.dart';
 import 'package:loop_habit_tracker/data/models/repetition_model.dart';
-import 'package:loop_habit_tracker/domain/usecases/calculate_habit_score.dart';
-import 'dart:math'; // Added import for min and max
+
 import 'package:loop_habit_tracker/l10n/app_localizations.dart';
 
 class StrengthChart extends StatelessWidget {
@@ -19,35 +18,106 @@ class StrengthChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final CalculateHabitScore calculateHabitScore = CalculateHabitScore();
-
     // Generate data points for the last 30 days
     List<FlSpot> spots = [];
     final now = DateTime.now();
-    for (int i = 29; i >= 0; i--) {
-      final date = now.subtract(Duration(days: i));
-      // Filter repetitions up to this date to calculate score for that day
-      final dailyRepetitions = repetitions
-          .where(
-            (rep) => rep.timestamp.isBefore(date.add(const Duration(days: 1))),
-          )
-          .toList();
 
-      final score = calculateHabitScore(habit, dailyRepetitions, date);
-      spots.add(FlSpot((29 - i).toDouble(), score)); // x-axis from 0 to 29
+    // 1. Group ALL repetitions by normalized date
+    final Map<DateTime, double> dailyValues = {};
+    for (var rep in repetitions) {
+      final date = DateTime(
+        rep.timestamp.year,
+        rep.timestamp.month,
+        rep.timestamp.day,
+      );
+      dailyValues[date] = (dailyValues[date] ?? 0.0) + (rep.value ?? 0.0);
     }
 
-    if (spots.isEmpty) {
-      // If no data points, create a dummy one for chart to show something
-      spots.add(const FlSpot(0, 0));
+    // 2. Calculate Rolling Strength (Success Rate over the last 30 days relative to each point)
+    // We want to plot 30 points: from (Today-29) to (Today).
+    // For each day D, the score is the success rate in the window [D-29, D] (or start date if closer).
+
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime habitStartDate = DateTime(
+      habit.createdAt.year,
+      habit.createdAt.month,
+      habit.createdAt.day,
+    );
+
+    for (int i = 0; i < 30; i++) {
+      // The date we are plotting for (x-axis value)
+      // x=0 is 29 days ago. x=29 is today.
+      // So plotDate = today - (29 - i) days
+      DateTime plotDate = today.subtract(Duration(days: 29 - i));
+
+      // If plotDate is before habit creation, score is 0
+      if (plotDate.isBefore(habitStartDate)) {
+        spots.add(FlSpot(i.toDouble(), 0));
+        continue;
+      }
+
+      // Calculate score window for plotDate
+      // Window ends at plotDate.
+      // Window starts at max(habitStartDate, plotDate - 29 days).
+      DateTime windowStart = plotDate.subtract(const Duration(days: 29));
+      if (windowStart.isBefore(habitStartDate)) {
+        windowStart = habitStartDate;
+      }
+
+      double windowProgress = 0.0;
+      int windowScheduledDays = 0;
+
+      DateTime iterator = windowStart;
+      while (!iterator.isAfter(plotDate)) {
+        final bool isScheduled = habit.frequency.shouldDoOnDay(
+          iterator,
+          habit.createdAt,
+        );
+
+        if (isScheduled) {
+          windowScheduledDays++;
+
+          // Calculate completion for this specific day
+          double dailyRatio = 0.0;
+          if (habit.goalType == GoalType.targetCount &&
+              habit.goalValue != null &&
+              habit.goalValue! > 0) {
+            // Helper to handle goal period logic simply
+            double currentTotal = 0.0;
+            if (habit.goalPeriod == GoalPeriod.daily) {
+              currentTotal = dailyValues[iterator] ?? 0.0;
+            } else {
+              // For complex periods, we simply fall back to checking if daily logic works
+              // or re-implement the window sum.
+              // To keep it responsive and fast, we'll try to use the daily values roughly
+              // OR, stricly speaking, 'Strength' is usually purely daily consistency.
+              // Let's stick to daily accumulation for the graph to show daily effort density.
+
+              // BUT if Goal is Weekly, doing it once on Monday counts for the week?
+              // Strength graphs usually plot "Did you meet the goal?".
+              // Let's stick to: "Did you do enough today?" or "Did you add value?"
+              // For simplicity and responsiveness:
+              currentTotal = dailyValues[iterator] ?? 0.0;
+            }
+            dailyRatio = (currentTotal / habit.goalValue!).clamp(0.0, 1.0);
+          } else {
+            dailyRatio = (dailyValues[iterator] ?? 0.0) > 0 ? 1.0 : 0.0;
+          }
+          windowProgress += dailyRatio;
+        }
+        iterator = iterator.add(const Duration(days: 1));
+      }
+
+      double score = 0.0;
+      if (windowScheduledDays > 0) {
+        score = (windowProgress / windowScheduledDays) * 100;
+      }
+      spots.add(FlSpot(i.toDouble(), score));
     }
 
-    double minY = spots.map((spot) => spot.y).reduce(min);
-    double maxY = spots.map((spot) => spot.y).reduce(max);
-
-    // Add some padding to Y axis
-    minY = (minY - 10).clamp(0, 100).toDouble();
-    maxY = (maxY + 10).clamp(0, 100).toDouble();
+    // Enforce 0-100 scale for consistency in "Habit Strength"
+    const double minY = 0;
+    const double maxY = 100;
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -85,8 +155,8 @@ class StrengthChart extends StatelessWidget {
               LineChartData(
                 minX: 0,
                 maxX: 29,
-                minY: 0, // Always start at 0 for consistency
-                maxY: 100, // Always end at 100 for percentage
+                minY: minY,
+                maxY: maxY,
                 gridData: FlGridData(
                   show: true,
                   drawVerticalLine: false,
