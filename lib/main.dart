@@ -16,6 +16,7 @@ import 'package:loop_habit_tracker/core/themes/app_theme.dart';
 import 'package:loop_habit_tracker/initial_screen.dart';
 import 'package:loop_habit_tracker/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:loop_habit_tracker/env/env.dart';
 
 // Called when the widget is first placed on the home screen
 @pragma('vm:entry-point')
@@ -32,7 +33,18 @@ Future<void> main() async {
 
   if (!Platform.environment.containsKey('FLUTTER_TEST')) {
     try {
-      await Firebase.initializeApp();
+      if (Platform.isAndroid) {
+        await Firebase.initializeApp(
+          options: FirebaseOptions(
+            apiKey: Env.firebaseApiKey,
+            appId: Env.firebaseAppId,
+            messagingSenderId: Env.firebaseMessagingSenderId,
+            projectId: Env.firebaseProjectId,
+          ),
+        );
+      } else {
+        await Firebase.initializeApp();
+      }
     } catch (e) {
       debugPrint(
         'Warning: Firebase initialization failed. Make sure google-services.json is present for Android. Error: $e',
