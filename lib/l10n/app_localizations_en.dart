@@ -547,6 +547,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sortOldest => 'Oldest';
 
   @override
+  String get sortStreak => 'Streak';
+
+  @override
   String get addNote => 'Add Note';
 
   @override

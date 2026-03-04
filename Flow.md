@@ -11,26 +11,28 @@ graph TD
     classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px;
     classDef startEnd fill:#fff,stroke:#333,stroke-width:1px;
 
-    subgraph UserFlow ["ผู้ใช้งานแอปพลิเคชัน (User)"]
+    subgraph UserFlow ["ผู้ใช้งานแอปพลิเคชัน (User Flow)"]
         direction TB
         Start(((Start))) --> OpenApp[เปิดเข้าสู่แอปพลิเคชัน]
-        OpenApp --> ViewHome[แสดงหน้ารายการนิสัย (Home / Dashboard)]
+        OpenApp --> ViewHome[แสดงหน้ารายการนิสัยประจำวัน]
 
-        ViewHome --> ActionDecision{"ผู้ใช้ต้องการทำอะไร?"}
+        ViewHome --> ActionDecision{"ประเภทการจัดการ\nที่ผู้ใช้งานต้องการ?"}
 
         %% Action 1: Create Habit
-        ActionDecision -->|เพิ่มนิสัยใหม่| InputData[/กรอกข้อมูลนิสัยใหม่\n(ชื่อ, เวลาแจ้งเตือน, ความถี่)/]
-        InputData --> SaveData[ระบบอัปเดตและบันทึกข้อมูล]
-        SaveData --> BackToHome[กลับสู่หน้ารายการ]
+        ActionDecision -->|เพิ่มนิสัยใหม่| InputData[/กรอกข้อมูลการสร้างหัวข้อ\n(ชื่อ, เวลา, ความถี่)/]
+        InputData --> SaveData[ระบบตรวจสอบและบันทึกข้อมูลนิสัย]
+        SaveData --> BackToHome[กลับสู่หน้าจอหลัก]
 
         %% Action 2: Check-in Habit
-        ActionDecision -->|บันทึกกิจกรรม| CheckIn[กดติ๊กถูก / ค้างเพื่อ Check-in]
-        CheckIn --> UpdateStats[ระบบอัปเดตสถานะและคำนวณสถิติ]
-        UpdateStats --> BackToHome
+        ActionDecision -->|บันทึกการทำกิจกรรม| CheckIn[/ผู้ใช้กด Check-in นิสัย/]
+        CheckIn --> IsCompleted{"ทำสำเร็จตาม\nเป้าหมายหรือไม่?"}
 
-        %% Action 3: View Details
-        ActionDecision -->|ดูรายละเอียด| ViewDetails[กดเข้าไปดูหน้าข้อมูลเชิงลึก\n(Habit Detail Screen)]
-        ViewDetails --> BackToHome
+        IsCompleted -->|ใช่| UpdateSuccess[ระบบอัปเดตจำนวนและคำนวณ Streak]
+        IsCompleted -->|ไม่ใช่| UpdateFail[ผู้ใช้ยกเลิกการ Check-in]
+
+        UpdateSuccess --> UpdateUI[ระบบอัปเดตและแสดงสถิติใหม่]
+        UpdateFail --> UpdateUI
+        UpdateUI --> BackToHome
 
         BackToHome --> Finish(((End)))
     end

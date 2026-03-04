@@ -546,6 +546,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get sortOldest => 'เก่าที่สุด';
 
   @override
+  String get sortStreak => 'เรียงตาม Streak';
+
+  @override
   String get addNote => 'เพิ่มโน้ต';
 
   @override

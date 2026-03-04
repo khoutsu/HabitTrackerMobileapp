@@ -19,7 +19,7 @@ import 'package:loop_habit_tracker/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:loop_habit_tracker/presentation/providers/habit_update_provider.dart';
 
-enum HabitSortType { manual, name, color, createdNewest, createdOldest }
+enum HabitSortType { manual, name, color, createdNewest, createdOldest, streak }
 
 class HabitListScreen extends StatefulWidget {
   const HabitListScreen({super.key});
@@ -602,6 +602,13 @@ class _HabitListScreenState extends State<HabitListScreen>
       case HabitSortType.createdOldest:
         habits.sort((a, b) => a.createdAt.compareTo(b.createdAt));
         break;
+      case HabitSortType.streak:
+        habits.sort((a, b) {
+          final streakA = _streaks[a.id] ?? 0;
+          final streakB = _streaks[b.id] ?? 0;
+          return streakB.compareTo(streakA);
+        });
+        break;
       case HabitSortType.manual:
       default:
         break;
@@ -697,6 +704,10 @@ class _HabitListScreenState extends State<HabitListScreen>
                   PopupMenuItem<HabitSortType>(
                     value: HabitSortType.createdOldest,
                     child: Text(AppLocalizations.of(context)!.sortOldest),
+                  ),
+                  PopupMenuItem<HabitSortType>(
+                    value: HabitSortType.streak,
+                    child: Text(AppLocalizations.of(context)!.sortStreak),
                   ),
                 ],
           ),

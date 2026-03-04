@@ -255,6 +255,7 @@
   "sortDefault": "Default",
   "sortNewest": "Newest",
   "sortOldest": "Oldest",
+  "sortStreak": "Streak",
   "addNote": "Add Note",
   "editNote": "Edit Note",
   "noteHint": "Enter note here..."

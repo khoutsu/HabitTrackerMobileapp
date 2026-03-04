@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:loop_habit_tracker/presentation/screens/onboarding_screen.dart';
 import 'package:loop_habit_tracker/app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:loop_habit_tracker/presentation/providers/theme_provider.dart';
+import 'package:loop_habit_tracker/core/themes/app_theme.dart';
 
 class InitialScreen extends StatefulWidget {
   const InitialScreen({super.key});
@@ -75,149 +78,153 @@ class _InitialScreenState extends State<InitialScreen>
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final lightTheme = AppTheme.lightTheme(themeProvider.themeStyle);
+    final colorScheme = lightTheme.colorScheme;
 
     return FutureBuilder<bool>(
       future: _initializeApp(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Scaffold(
-            backgroundColor: colorScheme.surface,
-            body: SizedBox(
-              width: double.infinity,
-              height: double.infinity,
-              child: Stack(
-                children: [
-                  // Background Decorative Blobs
-                  Positioned(
-                    top: -100,
-                    right: -50,
-                    child: _buildBlob(
-                      colorScheme.primary.withOpacity(0.04),
-                      300,
+          return Theme(
+            data: lightTheme,
+            child: Scaffold(
+              backgroundColor: colorScheme.surface,
+              body: SizedBox(
+                width: double.infinity,
+                height: double.infinity,
+                child: Stack(
+                  children: [
+                    // Background Decorative Blobs
+                    Positioned(
+                      top: -100,
+                      right: -50,
+                      child: _buildBlob(
+                        colorScheme.primary.withOpacity(0.04),
+                        300,
+                      ),
                     ),
-                  ),
-                  Positioned(
-                    bottom: -50,
-                    left: -100,
-                    child: _buildBlob(
-                      colorScheme.secondary.withOpacity(0.04),
-                      350,
+                    Positioned(
+                      bottom: -50,
+                      left: -100,
+                      child: _buildBlob(
+                        colorScheme.secondary.withOpacity(0.04),
+                        350,
+                      ),
                     ),
-                  ),
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        AnimatedBuilder(
-                          animation: _controller,
-                          builder: (context, child) {
-                            final scale =
-                                _scaleAnimation.value *
-                                (_controller.value > 0.7
-                                    ? _pulseAnimation.value
-                                    : 1.0);
-                            return Opacity(
-                              opacity: _fadeAnimation.value,
-                              child: Transform.scale(
-                                scale: scale,
-                                child: Container(
-                                  padding: const EdgeInsets.all(24),
-                                  decoration: BoxDecoration(
-                                    color: colorScheme.surface,
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: colorScheme.primary.withOpacity(
-                                          0.08,
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AnimatedBuilder(
+                            animation: _controller,
+                            builder: (context, child) {
+                              final scale =
+                                  _scaleAnimation.value *
+                                  (_controller.value > 0.7
+                                      ? _pulseAnimation.value
+                                      : 1.0);
+                              return Opacity(
+                                opacity: _fadeAnimation.value,
+                                child: Transform.scale(
+                                  scale: scale,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(24),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.surface,
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: colorScheme.primary
+                                              .withOpacity(0.08),
+                                          blurRadius: 40,
+                                          spreadRadius: 10,
                                         ),
-                                        blurRadius: 40,
-                                        spreadRadius: 10,
+                                      ],
+                                    ),
+                                    child: Image.asset(
+                                      'assets/192x192.png',
+                                      width: 100,
+                                      height: 100,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 48),
+                          AnimatedBuilder(
+                            animation: _controller,
+                            builder: (context, child) {
+                              return Opacity(
+                                opacity: _textFadeAnimation.value,
+                                child: Transform.translate(
+                                  offset: Offset(
+                                    0,
+                                    (1.0 - _textFadeAnimation.value) * 20,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        'Habit Tracker',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: colorScheme.primary,
+                                              letterSpacing: 2.0,
+                                            ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        'Track your habits, change your life',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(
+                                              color: colorScheme.onSurface
+                                                  .withOpacity(0.5),
+                                              letterSpacing: 0.8,
+                                            ),
                                       ),
                                     ],
                                   ),
-                                  child: Image.asset(
-                                    'assets/192x192.png',
-                                    width: 100,
-                                    height: 100,
-                                  ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 48),
-                        AnimatedBuilder(
-                          animation: _controller,
-                          builder: (context, child) {
-                            return Opacity(
-                              opacity: _textFadeAnimation.value,
-                              child: Transform.translate(
-                                offset: Offset(
-                                  0,
-                                  (1.0 - _textFadeAnimation.value) * 20,
-                                ),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      'Habit Tracker',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineMedium
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            color: colorScheme.primary,
-                                            letterSpacing: 2.0,
-                                          ),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      'Track your habits, change your life',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(
-                                            color: colorScheme.onSurface
-                                                .withOpacity(0.5),
-                                            letterSpacing: 0.8,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Positioned(
-                    bottom: 60,
-                    left: 0,
-                    right: 0,
-                    child: Center(
-                      child: FadeTransition(
-                        opacity: _textFadeAnimation,
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              width: 120,
-                              child: LinearProgressIndicator(
-                                backgroundColor: colorScheme.primary
-                                    .withOpacity(0.05),
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  colorScheme.primary.withOpacity(0.2),
+                    Positioned(
+                      bottom: 60,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: FadeTransition(
+                          opacity: _textFadeAnimation,
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                width: 120,
+                                child: LinearProgressIndicator(
+                                  backgroundColor: colorScheme.primary
+                                      .withOpacity(0.05),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    colorScheme.primary.withOpacity(0.2),
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                  minHeight: 3,
                                 ),
-                                borderRadius: BorderRadius.circular(10),
-                                minHeight: 3,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );

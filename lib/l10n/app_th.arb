@@ -255,6 +255,7 @@
   "sortDefault": "ค่าเริ่มต้น",
   "sortNewest": "ใหม่ล่าสุด",
   "sortOldest": "เก่าที่สุด",
+  "sortStreak": "เรียงตาม Streak",
   "addNote": "เพิ่มโน้ต",
   "editNote": "แก้ไขโน้ต",
   "noteHint": "ใส่ข้อความ..."

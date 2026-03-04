@@ -1106,6 +1106,12 @@ abstract class AppLocalizations {
   /// **'Oldest'**
   String get sortOldest;
 
+  /// No description provided for @sortStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak'**
+  String get sortStreak;
+
   /// No description provided for @addNote.
   ///
   /// In en, this message translates to:
